@@ -1,0 +1,21 @@
+{
+    "daterequest": "2020-06-30 17:44:12",
+    "targa": "AM120FT",
+    "vehicleInfo":
+    [{
+    "datetime": "2020-06-26T06:01:26",
+    "latitude": 45.394713,
+    "longitude": 9.510033,
+    "kmh": "0",
+    "temperature1": 24.18,
+    "temperature2": 24.52
+    },
+    {
+    "datetime": "2020-06-26T06:01:58",
+    "latitude": 45.39472,
+    "longitude": 9.51003,
+    "kmh": "0",
+    "temperature1": 24.22,
+    "temperature2": 24.54
+    }]
+    }

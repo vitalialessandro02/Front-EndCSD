@@ -1,0 +1,33 @@
+[
+  {
+    "timestamp": "2024-01-31T08:00:00Z",
+    "temperature": 25,
+    "humidity": 46
+  },
+  {
+    "timestamp": "2024-01-31T09:00:00Z",
+    "temperature": 24,
+    "humidity": 48
+  },
+    {
+      "timestamp": "2024-01-31T10:00:00Z",
+      "temperature": 22,
+      "humidity": 55
+    },
+    {
+      "timestamp": "2024-01-31T11:00:00Z",
+      "temperature": 23,
+      "humidity": 50
+    },
+    {
+      "timestamp": "2024-01-31T12:00:00Z",
+      "temperature": 26,
+      "humidity": 49
+    },
+    {
+      "timestamp": "2024-01-31T15:00:00Z",
+      "temperature": 27,
+      "humidity": 50
+    }
+  ]
+  
