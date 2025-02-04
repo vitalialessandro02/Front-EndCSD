@@ -138,4 +138,3 @@ const ChartComponent = ({ data = sampleData, label, color }) => {
 };
 
 export default ChartComponent;
-

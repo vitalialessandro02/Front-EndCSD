@@ -17,5 +17,12 @@
     "kmh": "0",
     "temperature1": 24.22,
     "temperature2": 24.54
-    }]
+    },{
+        "datetime": "2020-06-26T06:03:58",
+        "latitude": 45.39482,
+        "longitude": 9.51000,
+        "kmh": "0",
+        "temperature1": 24.52,
+        "temperature2": 24.74
+        }]
     }
