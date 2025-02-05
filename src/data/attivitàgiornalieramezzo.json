@@ -12,15 +12,15 @@
     },
     {
     "datetime": "2020-06-26T06:01:58",
-    "latitude": 45.39472,
+    "latitude": 45.49472,
     "longitude": 9.51003,
     "kmh": "0",
     "temperature1": 24.22,
     "temperature2": 24.54
     },{
         "datetime": "2020-06-26T06:03:58",
-        "latitude": 45.39482,
-        "longitude": 9.51000,
+        "latitude": 45.4582,
+        "longitude": 9.61000,
         "kmh": "0",
         "temperature1": 24.52,
         "temperature2": 24.74
