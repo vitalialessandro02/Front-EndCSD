@@ -7,10 +7,10 @@ import "leaflet-polylinedecorator/dist/leaflet.polylineDecorator.js"; // Import 
 
 // Crea l'icona del camioncino (modifica il percorso in base alla posizione effettiva del file)
 const truckIcon = L.icon({
-  iconUrl: "Front-EndCSD-main\src\data\image.png", // Percorso relativo rispetto alla cartella "public"
+  iconUrl: "/image.png", // Percorso relativo rispetto alla cartella "public"
   iconSize: [32, 32], // Dimensione dell'icona (adatta a seconda delle tue necessità)
   iconAnchor: [16, 32], // Punto di ancoraggio dell'icona (metti la base dell'icona sul punto del marker)
-  popupAnchor: [0, -32], // La finestra del popup apparirà sopra l'icona
+  popupAnchor: [0, 0], // La finestra del popup apparirà sopra l'icona
 });
 
 const AttivitaDataComponent = ({ data }) => {
