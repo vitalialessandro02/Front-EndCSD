@@ -4,6 +4,7 @@ import ChartComponent from "../components/ChartComponent";
 import sampleData from "../data/sample.json";
 import attivitàgiornalieramezzoData from "../data/attivitàgiornalieramezzo.json";
 import AttivitaDataComponent from "../components/AttivitaDataComponent";
+import '../styles/Axitea.css';
 
 const Dashboard = () => {
   const [jsonData, setJsonData] = useState(sampleData);

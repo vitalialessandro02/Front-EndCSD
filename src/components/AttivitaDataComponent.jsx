@@ -280,4 +280,3 @@ const AttivitaDataComponent = ({ data }) => {
 };
 
 export default AttivitaDataComponent;
-

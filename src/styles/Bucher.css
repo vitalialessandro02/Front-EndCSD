@@ -1,0 +1,22 @@
+/* Bucher.css */
+.bucher-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Centra il contenuto verticalmente */
+    background-color: #f7fafc; /* Grigio chiaro */
+    text-align: center; /* Centra il testo orizzontalmente */
+  }
+  
+  .bucher-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #2b6cb0; /* Colore blu */
+  }
+  
+  .bucher-content {
+    font-size: 1.25rem;
+    color: #4a5568; /* Colore del testo secondario */
+  }

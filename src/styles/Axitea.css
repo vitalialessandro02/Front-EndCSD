@@ -1,0 +1,23 @@
+/* Dashboard.css */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Centra il contenuto verticalmente */
+    background-color: #edf2f7; /* Grigio chiaro */
+    text-align: center; /* Centra il testo orizzontalmente */
+  }
+  
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #2d3748; /* Colore del testo */
+  }
+  
+  .dashboard-content {
+    font-size: 1.25rem;
+    color: #4a5568; /* Colore del testo secondario */
+  }
+  
