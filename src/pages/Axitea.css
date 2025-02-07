@@ -1,0 +1,27 @@
+.axitea-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #000428, #004e92);
+    color: white;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .axitea-title {
+    font-size: 4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    animation: glow 1.5s infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+    }
+    to {
+      text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000;
+    }
+  }
+  

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FileUploader from "../components/FileUploader";
 import ChartComponent from "../components/ChartComponent";
 import sampleData from "../data/sample.json";
 import attivitàgiornalieramezzoData from "../data/attivitàgiornalieramezzo.json";
+import targheData from "../data/targhe.json";
 import AttivitaDataComponent from "../components/AttivitaDataComponent";
 import '../styles/Axitea.css';
 
@@ -11,48 +12,65 @@ const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("Mezzi in servizio giornaliero");
   const [chartType, setChartType] = useState("Bar");
   const [mapVisible, setMapVisible] = useState(false);
+  const [selectedTarga, setSelectedTarga] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [noData, setNoData] = useState(true);  // Stato per "No data available"
+
+  useEffect(() => {
+    if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
+      filterData();
+    } else {
+      setNoData(true); // Di default mostra "No data available"
+    }
+  }, [selectedTarga, selectedDate, selectedOption]);
+
+  useEffect(() => {
+    if (selectedOption === "Esempio") {
+      setFilteredData(sampleData);
+      setNoData(false);
+    }
+  }, [selectedOption]);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
   };
 
-  const handleBarChartClick = () => {
-    setChartType("Bar");
+  const handleTargaChange = (event) => {
+    setSelectedTarga(event.target.value);
   };
 
-  const handlePieChartClick = () => {
-    setChartType("Pie");
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
   };
 
-  const getDataForSelectedOption = () => {
-    switch (selectedOption) {
-      case "Mezzi in servizio giornaliero":
-        return [];
-      case "Km percorsi giornalmente":
-        return [];
-      case "Esempio":
-        return sampleData;
-      case "Attività di un determinato mezzo con selezione della data":
-        return attivitàgiornalieramezzoData.vehicleInfo;
-      case "Numero di eventi per data":
-        return [];
-      case "Minuti di guida in funzione dei km percorsi":
-        return [];
-      case "Elenco dei mezzi fermi per manutenzione":
-        return [];
-      default:
-        return [];
+  const filterData = () => {
+    if (!selectedTarga || !selectedDate) return;
+
+    const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
+
+    const foundActivity = attivitàgiornalieramezzoData.vehicleInfo.filter(
+      (entry) => 
+        entry.datetime.startsWith(selectedDateFormatted) && 
+        attivitàgiornalieramezzoData.targa === selectedTarga
+    );
+
+    if (foundActivity.length > 0) {
+      setFilteredData(foundActivity);
+      setNoData(false);
+    } else {
+      setFilteredData([]);
+      setNoData(true);
     }
   };
-
-  const filteredData = getDataForSelectedOption();
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Dashboard</h1>
-      
+
       <FileUploader onUpload={setJsonData} />
 
+      {/* Selettore Opzioni */}
       <div className="mb-4 text-center">
         <label htmlFor="data-selection" className="font-semibold text-xl mr-2">
           Seleziona un'opzione:
@@ -79,20 +97,42 @@ const Dashboard = () => {
         </select>
       </div>
 
-      {selectedOption === "Attività di un determinato mezzo con selezione della data" && filteredData.length > 0 && (
+      {/* Selezione targa e data */}
+      {selectedOption === "Attività di un determinato mezzo con selezione della data" && (
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <AttivitaDataComponent
-            data={filteredData}
-            label="Temperature1"
-            color="red"
-            chartType={chartType}
-            mapVisible={mapVisible}
-            setMapVisible={setMapVisible}
+          <label className="block text-lg font-semibold mb-2">Seleziona una targa:</label>
+          <select value={selectedTarga} onChange={handleTargaChange} className="p-2 border rounded-lg w-full mb-4">
+            <option value="">Seleziona una targa</option>
+            {targheData.veichles.map((targa, index) => (
+              <option key={index} value={targa}>{targa}</option>
+            ))}
+          </select>
+
+          <label className="block text-lg font-semibold mb-2">Seleziona una data:</label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className="p-2 border rounded-lg w-full mb-4"
           />
+
+          {noData ? (
+            <p className="text-center text-red-500 text-lg font-semibold">No data available</p>
+          ) : (
+            <AttivitaDataComponent
+              data={filteredData}
+              label="Temperature1"
+              color="red"
+              chartType={chartType}
+              mapVisible={mapVisible}
+              setMapVisible={setMapVisible}
+            />
+          )}
         </div>
       )}
 
-      {selectedOption === "Esempio" && filteredData.length > 0 && (
+      {/* Sezione per "Esempio" */}
+      {selectedOption === "Esempio" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <div className="bg-white p-4 rounded-lg shadow-md">
             <ChartComponent data={filteredData} label="Temperature" color="red" />
@@ -103,6 +143,7 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Mappa */}
       {mapVisible && (
         <div
           id="map"
