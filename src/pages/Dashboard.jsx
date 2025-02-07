@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import FileUploader from "../components/FileUploader";
 import ChartComponent from "../components/ChartComponent";
 import sampleData from "../data/sample.json";
@@ -8,6 +10,7 @@ import AttivitaDataComponent from "../components/AttivitaDataComponent";
 import '../styles/Axitea.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [jsonData, setJsonData] = useState(sampleData);
   const [selectedOption, setSelectedOption] = useState("Mezzi in servizio giornaliero");
   const [chartType, setChartType] = useState("Bar");
@@ -66,7 +69,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Dashboard</h1>
+         {/* Freccia per tornare indietro */}
+         <button className="back-button" onClick={() => navigate(-1)}>
+        <FaArrowLeft className="back-icon" />
+      </button>
+      
+      <h1 className="text-3xl font-bold mb-6 text-center">Dashboard Axitea</h1>
 
       <FileUploader onUpload={setJsonData} />
 
@@ -118,7 +126,9 @@ const Dashboard = () => {
 
           {noData ? (
             <p className="text-center text-red-500 text-lg font-semibold">No data available</p>
+
           ) : (
+            <div className="chart-section">
             <AttivitaDataComponent
               data={filteredData}
               label="Temperature1"
@@ -127,12 +137,14 @@ const Dashboard = () => {
               mapVisible={mapVisible}
               setMapVisible={setMapVisible}
             />
+            </div>
           )}
         </div>
       )}
 
       {/* Sezione per "Esempio" */}
       {selectedOption === "Esempio" && (
+        <div className="chart-section">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <div className="bg-white p-4 rounded-lg shadow-md">
             <ChartComponent data={filteredData} label="Temperature" color="red" />
@@ -140,6 +152,7 @@ const Dashboard = () => {
           <div className="bg-white p-4 rounded-lg shadow-md">
             <ChartComponent data={filteredData} label="Humidity" color="blue" />
           </div>
+        </div>
         </div>
       )}
 
@@ -159,4 +172,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;        

@@ -1,46 +1,35 @@
 /* Home.css */
 html, body {
-    height: 100%; /* Assicurati che il corpo prenda l'intera altezza */
-    margin: 0; /* Elimina margini di default */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .home-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f3f4f6;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 600px; /* Imposta una larghezza massima per il contenitore */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center; /* Centra il testo orizzontalmente */
-  }
-  
-  .title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    color: #333;
-  }
-  
-  .dropdown {
-    padding: 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
-    background-color: white;
-    cursor: pointer;
-    transition: border 0.3s ease;
-    width: 250px;
-    max-width: 90%; /* Limita la larghezza per essere reattivo */
-  }
-  
-  .dropdown:hover {
-    border-color: #4c51bf;
-  }
-  
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('cosmari2.jpg') no-repeat center center fixed; /* Fissa lo sfondo */
+  background-size: cover; /* Copre l'intera area */
+}
+
+/* Contenitore principale */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: rgba(243, 244, 246, 0.9); /* Maggiore opacità per leggibilità */
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+/* Logo in alto a destra */
+.logo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 100px; /* Adatta la dimensione */
+  height: auto;
+}
