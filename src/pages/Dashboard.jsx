@@ -26,8 +26,9 @@ const Dashboard = () => {
   const [eventiData, setEventiData] = useState([]);
 
 
-  const [noData, setNoData] = useState(true);  // Stato per "No data available"
 
+  const [noData, setNoData] = useState(true);  // Stato per "No data available"
+  const [noEventiData, setNoEventiData] = useState(true);
   useEffect(() => {
     if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
       filterData();
@@ -44,13 +45,12 @@ const Dashboard = () => {
   }, [selectedOption]);
   useEffect(() => {
     if (selectedOption === "Numero di eventi giornalieri" && selectedTarga && selectedDate) {
-      
       filterEventiData();
-    }
-    else {
-      setNoData(true); // Di default mostra "No data available"
+    } else {
+      setNoEventiData(true); // Imposta solo il nuovo stato, senza interferire con `noData`
     }
   }, [selectedTarga, selectedDate, selectedOption]);
+  
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
   };
@@ -113,10 +113,10 @@ const Dashboard = () => {
 
     if (foundEvent) {
         setEventiData([numeroEventiGiornalieriData]); // Convertito in array per uniformità
-        setNoData(false);
+        setNoEventiData(false);
     } else {
         setEventiData([]);
-        setNoData(true);
+        setNoEventiData(true);
     }
 };
 
