@@ -8,6 +8,11 @@ import attivitàgiornalieramezzoData from "../data/attivitàgiornalieramezzo.jso
 import targheData from "../data/targhe.json";
 import AttivitaDataComponent from "../components/AttivitaDataComponent";
 import '../styles/Axitea.css';
+import numeroEventiGiornalieriData from "../data/numeroeventigiornalieri.json";
+import EventiGiornalieri from "../components/EventiGiornalieri";
+
+
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,6 +23,9 @@ const Dashboard = () => {
   const [selectedTarga, setSelectedTarga] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [eventiData, setEventiData] = useState([]);
+
+
   const [noData, setNoData] = useState(true);  // Stato per "No data available"
 
   useEffect(() => {
@@ -34,7 +42,15 @@ const Dashboard = () => {
       setNoData(false);
     }
   }, [selectedOption]);
-
+  useEffect(() => {
+    if (selectedOption === "Numero di eventi giornalieri" && selectedTarga && selectedDate) {
+      
+      filterEventiData();
+    }
+    else {
+      setNoData(true); // Di default mostra "No data available"
+    }
+  }, [selectedTarga, selectedDate, selectedOption]);
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
   };
@@ -67,6 +83,48 @@ const Dashboard = () => {
     }
   };
 
+
+  const filterEventiData = () => {
+    if (!selectedTarga || !selectedDate) return;
+
+    // Formattiamo la data selezionata nel formato YYYY-MM-DD
+    const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
+
+    // Log per debug
+    console.log("Selected date formatted:", selectedDateFormatted);
+
+    // Convertiamo la data del JSON "250205" in formato "YYYY-MM-DD"
+    const jsonYear = "20" + numeroEventiGiornalieriData.date.substring(0, 2); // "2025"
+    const jsonMonth = numeroEventiGiornalieriData.date.substring(2, 4); // "02"
+    const jsonDay = numeroEventiGiornalieriData.date.substring(4, 6); // "05"
+    const jsonDateFormatted = `${jsonYear}-${jsonMonth}-${jsonDay}`; // "2025-02-05"
+
+    // Log per debug
+    console.log("JSON date formatted:", jsonDateFormatted);
+    console.log("JSON targa:", numeroEventiGiornalieriData.targa);
+    console.log("Selected targa:", selectedTarga);
+
+    // Filtriamo se la targa e la data coincidono
+    const foundEvent = 
+        numeroEventiGiornalieriData.targa === selectedTarga &&
+        jsonDateFormatted === selectedDateFormatted;
+
+    console.log("Match trovato:", foundEvent);
+
+    if (foundEvent) {
+        setEventiData([numeroEventiGiornalieriData]); // Convertito in array per uniformità
+        setNoData(false);
+    } else {
+        setEventiData([]);
+        setNoData(true);
+    }
+};
+
+
+  
+  
+  
+  
   return (
     <div className="min-h-screen bg-gray-100 p-8">
          {/* Freccia per tornare indietro */}
@@ -90,12 +148,11 @@ const Dashboard = () => {
           className="p-2 border rounded-lg"
         >
           <option value="Mezzi in servizio giornaliero">Mezzi in servizio giornaliero</option>
-          <option value="Km percorsi giornalmente">Km percorsi giornalmente</option>
           <option value="Esempio">Esempio</option>
           <option value="Attività di un determinato mezzo con selezione della data">
             Attività di un determinato mezzo con selezione della data
           </option>
-          <option value="Numero di eventi per data">Numero di eventi per data</option>
+          <option value="Numero di eventi giornalieri">Numero di eventi per data</option>
           <option value="Minuti di guida in funzione dei km percorsi">
             Minuti di guida in funzione dei km percorsi
           </option>
@@ -106,7 +163,7 @@ const Dashboard = () => {
       </div>
 
       {/* Selezione targa e data */}
-      {selectedOption === "Attività di un determinato mezzo con selezione della data" && (
+      {(selectedOption === "Attività di un determinato mezzo con selezione della data"||selectedOption === "Numero di eventi giornalieri" )&& (
         <div className="bg-white p-4 rounded-lg shadow-md">
           <label className="block text-lg font-semibold mb-2">Seleziona una targa:</label>
           <select value={selectedTarga} onChange={handleTargaChange} className="p-2 border rounded-lg w-full mb-4">
@@ -155,6 +212,14 @@ const Dashboard = () => {
         </div>
         </div>
       )}
+{selectedOption === "Numero di eventi giornalieri" && eventiData && eventiData.length > 0 && (
+  <div className="chart-section">
+    <EventiGiornalieri data={eventiData} />
+  </div>
+)}
+
+
+
 
       {/* Mappa */}
       {mapVisible && (

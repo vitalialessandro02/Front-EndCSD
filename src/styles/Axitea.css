@@ -140,3 +140,14 @@ select, input[type="date"] {
   width: 100% !important;
   height: 100% !important;
 }
+
+
+
+.chart-section {
+  background: rgba(255, 255, 255, 0.7); /* Sfondo bianco semi-trasparente */
+  backdrop-filter: blur(10px); /* Effetto glassmorphism */
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombra morbida */
+  margin-top: 20px;
+}
