@@ -119,28 +119,32 @@ select, input[type="date"] {
 }
 
 .chart-section {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  min-height: 400px;  /* Imposta una dimensione minima */
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  height: 100%; /* Imposta l'altezza al 100% del contenitore */
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Allinea il contenuto */
 }
 
 .chart {
   background-color: white;
-  padding: 20px;
+  padding: 0; /* Rimuove il padding per evitare spazi extra */
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  min-height: 350px;
+  height: 100%; /* Imposta l'altezza al 100% per evitare spazi vuoti */
+  width: 100%; /* Imposta la larghezza al 100% */
+  display: flex;
 }
 
 .chart-container canvas {
   background-color: transparent !important;
   width: 100% !important;
-  height: 100% !important;
+  height: 100% !important; /* Assicurati che il canvas occupi tutta l'altezza */
 }
-
 
 
 .chart-section {
@@ -150,4 +154,5 @@ select, input[type="date"] {
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombra morbida */
   margin-top: 20px;
+  width: 700px;
 }

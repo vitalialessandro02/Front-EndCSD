@@ -10,8 +10,8 @@ import AttivitaDataComponent from "../components/AttivitaDataComponent";
 import '../styles/Axitea.css';
 import numeroEventiGiornalieriData from "../data/numeroeventigiornalieri.json";
 import EventiGiornalieri from "../components/EventiGiornalieri";
-
-
+import KmMinutiGiornalieri from "../components/KmMinutiGiornalieri";
+import numeroKmMinutiGiornalieriData from "../data/kmminutidiguidamezzo.json";
 
 
 const Dashboard = () => {
@@ -24,11 +24,12 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [eventiData, setEventiData] = useState([]);
-
+  const [kmMinutiData, setKmMinutiData] = useState([]);
 
 
   const [noData, setNoData] = useState(true);  // Stato per "No data available"
   const [noEventiData, setNoEventiData] = useState(true);
+  const [noKmMinutiData, setNoKmMinutiData] = useState(true);
   useEffect(() => {
     if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
       filterData();
@@ -51,6 +52,14 @@ const Dashboard = () => {
     }
   }, [selectedTarga, selectedDate, selectedOption]);
   
+  useEffect(() => {
+    if (selectedOption === "Minuti di guida in funzione dei km percorsi" && selectedTarga && selectedDate) {
+      filterKmMinutiData();
+    } else {
+      setNoKmMinutiData(true);
+    }
+}, [selectedTarga, selectedDate, selectedOption]);
+
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
   };
@@ -120,6 +129,43 @@ const Dashboard = () => {
     }
 };
 
+const filterKmMinutiData = () => {
+  if (!selectedTarga || !selectedDate) return;
+
+  const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0]; 
+  console.log("Selected Date Formatted:", selectedDateFormatted);
+
+  const jsonDate = numeroKmMinutiGiornalieriData.date;
+  const jsonYear = "20" + jsonDate.substring(0, 2);  
+  const jsonMonth = jsonDate.substring(2, 4);  
+  const jsonDay = jsonDate.substring(4, 6);    
+  
+  
+
+  const jsonDateFormatted = `${jsonYear}-${jsonMonth}-${jsonDay}`;
+
+  console.log("JSON Date Formatted:", jsonDateFormatted);
+
+  const foundKmMinuti = 
+    numeroKmMinutiGiornalieriData.targa === selectedTarga &&
+    jsonDateFormatted === selectedDateFormatted; 
+
+  console.log("Found KmMinutiData:", foundKmMinuti);
+
+  if (foundKmMinuti) {
+    // Estrai solo i dati che ti servono
+    const filterData = {
+      totKmInterval: numeroKmMinutiGiornalieriData.totKmInterval,
+      totDriveTime: numeroKmMinutiGiornalieriData.totDriveTime
+    };
+
+    setKmMinutiData([filterData]);
+    setNoKmMinutiData(false);
+  } else {
+    setKmMinutiData([]);
+    setNoKmMinutiData(true);
+  }
+};
 
   
   
@@ -163,7 +209,7 @@ const Dashboard = () => {
       </div>
 
       {/* Selezione targa e data */}
-      {(selectedOption === "Attività di un determinato mezzo con selezione della data"||selectedOption === "Numero di eventi giornalieri" )&& (
+      {(selectedOption === "Attività di un determinato mezzo con selezione della data"||selectedOption === "Numero di eventi giornalieri" || selectedOption === "Minuti di guida in funzione dei km percorsi" )&& (
         <div className="bg-white p-4 rounded-lg shadow-md">
           <label className="block text-lg font-semibold mb-2">Seleziona una targa:</label>
           <select value={selectedTarga} onChange={handleTargaChange} className="p-2 border rounded-lg w-full mb-4">
@@ -218,7 +264,11 @@ const Dashboard = () => {
   </div>
 )}
 
-
+{selectedOption === "Minuti di guida in funzione dei km percorsi" && kmMinutiData && kmMinutiData.length > 0 && (
+  <div className="chart-section">
+    <KmMinutiGiornalieri data={kmMinutiData} />
+  </div>
+)}
 
 
       {/* Mappa */}
