@@ -13,7 +13,7 @@ import EventiGiornalieri from "../components/EventiGiornalieri";
 import KmMinutiGiornalieri from "../components/KmMinutiGiornalieri";
 import numeroKmMinutiGiornalieriData from "../data/kmminutidiguidamezzo.json";
 
-
+import { getAccessToken } from "../utils/authUtils";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [jsonData, setJsonData] = useState(sampleData);
@@ -26,10 +26,37 @@ const Dashboard = () => {
   const [eventiData, setEventiData] = useState([]);
   const [kmMinutiData, setKmMinutiData] = useState([]);
 
-
   const [noData, setNoData] = useState(true);  // Stato per "No data available"
   const [noEventiData, setNoEventiData] = useState(true);
   const [noKmMinutiData, setNoKmMinutiData] = useState(true);
+  const [error, setError] = useState(null);
+  const [showToken, setShowToken] = useState(false); // Stato per mostrare/nascondere il token
+  const [token, setToken] = useState("");
+
+
+
+
+  const [response, setResponse] = useState('');
+
+  const fetchToken = async () => {
+ try {
+            const response = await fetch('http://127.0.0.1:8000/api/plates/', {
+                method: 'POST',
+                credentials: 'include', // Includi i cookie nella richiesta
+            });
+            const data = await response.json();
+            setResponse(JSON.stringify(data, null, 2));
+        } catch (error) {
+            console.error('Errore durante il recupero delle targhe:', error);
+        }
+};
+
+
+
+
+
+
+
   useEffect(() => {
     if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
       filterData();
@@ -51,7 +78,7 @@ const Dashboard = () => {
       setNoEventiData(true); // Imposta solo il nuovo stato, senza interferire con `noData`
     }
   }, [selectedTarga, selectedDate, selectedOption]);
-  
+
   useEffect(() => {
     if (selectedOption === "Minuti di guida in funzione dei km percorsi" && selectedTarga && selectedDate) {
       filterKmMinutiData();
@@ -78,8 +105,8 @@ const Dashboard = () => {
     const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
 
     const foundActivity = attivitàgiornalieramezzoData.vehicleInfo.filter(
-      (entry) => 
-        entry.datetime.startsWith(selectedDateFormatted) && 
+      (entry) =>
+        entry.datetime.startsWith(selectedDateFormatted) &&
         attivitàgiornalieramezzoData.targa === selectedTarga
     );
 
@@ -114,7 +141,7 @@ const Dashboard = () => {
     console.log("Selected targa:", selectedTarga);
 
     // Filtriamo se la targa e la data coincidono
-    const foundEvent = 
+    const foundEvent =
         numeroEventiGiornalieriData.targa === selectedTarga &&
         jsonDateFormatted === selectedDateFormatted;
 
@@ -132,23 +159,23 @@ const Dashboard = () => {
 const filterKmMinutiData = () => {
   if (!selectedTarga || !selectedDate) return;
 
-  const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0]; 
+  const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
   console.log("Selected Date Formatted:", selectedDateFormatted);
 
   const jsonDate = numeroKmMinutiGiornalieriData.date;
-  const jsonYear = "20" + jsonDate.substring(0, 2);  
-  const jsonMonth = jsonDate.substring(2, 4);  
-  const jsonDay = jsonDate.substring(4, 6);    
-  
-  
+  const jsonYear = "20" + jsonDate.substring(0, 2);
+  const jsonMonth = jsonDate.substring(2, 4);
+  const jsonDay = jsonDate.substring(4, 6);
+
+
 
   const jsonDateFormatted = `${jsonYear}-${jsonMonth}-${jsonDay}`;
 
   console.log("JSON Date Formatted:", jsonDateFormatted);
 
-  const foundKmMinuti = 
+  const foundKmMinuti =
     numeroKmMinutiGiornalieriData.targa === selectedTarga &&
-    jsonDateFormatted === selectedDateFormatted; 
+    jsonDateFormatted === selectedDateFormatted;
 
   console.log("Found KmMinutiData:", foundKmMinuti);
 
@@ -167,20 +194,54 @@ const filterKmMinutiData = () => {
   }
 };
 
-  
-  
-  
-  
+
+
+
+
   return (
+
+
+
+
+
+
+
+
+
+
+
+
     <div className="min-h-screen bg-gray-100 p-8">
+     <div>
+        <h1>Dashboard</h1>
+        <button onClick={fetchToken}>Richiedi Token</button>
+
+        {token && (
+          <p style={{ marginTop: '10px' }}>
+            <strong>Token ricevuto:</strong> {token}
+          </p>
+        )}
+
+        {error && (
+          <p style={{ color: 'red', marginTop: '10px' }}>
+            Errore: {error}
+          </p>
+        )}
+      </div>
+
+
+
+
+
+
          {/* Freccia per tornare indietro */}
          <button className="back-button" onClick={() => navigate(-1)}>
         <FaArrowLeft className="back-icon" />
       </button>
-      
+
       <h1 className="text-3xl font-bold mb-6 text-center">Dashboard Axitea</h1>
 
-      <FileUploader onUpload={setJsonData} />
+
 
       {/* Selettore Opzioni */}
       <div className="mb-4 text-center">
@@ -287,4 +348,4 @@ const filterKmMinutiData = () => {
   );
 };
 
-export default Dashboard;        
+export default Dashboard;
