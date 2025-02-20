@@ -33,7 +33,8 @@ const Dashboard = () => {
   const [showToken, setShowToken] = useState(false); // Stato per mostrare/nascondere il token
   const [token, setToken] = useState("");
 
-
+  const [attivitàGiornalieraMezzoData, setAttivitàGiornalieraMezzoData] = useState(null);
+  
 
 
   const [response, setResponse] = useState('');
@@ -60,13 +61,183 @@ useEffect(() => {
   fetchPlates();
 }, []);
 
-  useEffect(() => {
-    if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
-      filterData();
-    } else {
-      setNoData(true); // Di default mostra "No data available"
+
+useEffect(() => {
+  const fetchVehicleData = async () => {
+    try {
+      const dateObj = new Date(selectedDate);
+
+      const datestart = formatDateToYYMMDDHHMMSS(dateObj, 0, 0, 0); // Inizio giornata 00:00:00
+      const dateend = formatDateToYYMMDDHHMMSS(dateObj, 23, 59, 59); // Fine giornata 23:59:59
+
+      const response = await fetch('http://localhost:8000/api/vehicle/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plate: selectedTarga,
+          datestart: datestart,
+          dateend: dateend,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore durante il recupero dei dati del mezzo');
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'success' && data.data.vehicleInfo) {
+        setFilteredData(data.data.vehicleInfo);
+        setNoData(false);
+      } else {
+        setFilteredData([]);
+        setNoData(true);
+      }
+    } catch (error) {
+      console.error('Errore durante il fetch dei dati attività mezzo:', error);
+      setFilteredData([]);
+      setNoData(true);
     }
-  }, [selectedTarga, selectedDate, selectedOption]);
+  };
+
+  if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
+    fetchVehicleData();
+  } else {
+    setNoData(true); // Di default mostra "No data available"
+  }
+}, [selectedTarga, selectedDate, selectedOption]);
+
+const formatDateToYYMMDDHHMMSS = (date, hour, minute, second) => {
+  const year = String(date.getFullYear()).slice(2); // YY
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // MM
+  const day = String(date.getDate()).padStart(2, '0'); // DD
+  const hh = String(hour).padStart(2, '0'); // HH
+  const mm = String(minute).padStart(2, '0'); // MM
+  const ss = String(second).padStart(2, '0'); // SS
+
+  return `${year}${month}${day}${hh}${mm}${ss}`;
+};
+
+
+
+useEffect(() => {
+  const fetchVehicleInfoByInterval = async () => {
+    try {
+      const dateObj = new Date(selectedDate);
+      const datestart = formatDateToYYMMDDHHMMSS(dateObj, 0, 0, 0);
+      const dateend = formatDateToYYMMDDHHMMSS(dateObj, 23, 59, 59);
+
+      const response = await fetch('http://localhost:8000/api/vehicle_interval/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plate: selectedTarga,
+          datestart: datestart,
+          dateend: dateend,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore durante il recupero dei dati del mezzo per intervallo');
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'success' && data.data) {
+        // Estrai solo i campi richiesti dalla risposta
+        const extractedData = {
+          totStart: data.data.totStart,
+          totStop: data.data.totStop,
+          totPForzaOn: data.data.totPForzaOn,
+          totPForzaOff: data.data.totPForzaOff,
+          totEngineIgnition: data.data.totEngineIgnition,
+        };
+
+        setEventiData([extractedData]); // Per mantenere la struttura a array
+        setNoEventiData(false);
+      } else {
+        setEventiData([]);
+        setNoEventiData(true);
+      }
+    } catch (error) {
+      console.error('Errore durante il fetch dei dati per intervallo:', error);
+      setEventiData([]);
+      setNoEventiData(true);
+    }
+  };
+
+  if (selectedOption === "Numero di eventi giornalieri" && selectedTarga && selectedDate) {
+    fetchVehicleInfoByInterval();
+  } else {
+    setNoEventiData(true);
+  }
+}, [selectedTarga, selectedDate, selectedOption]);
+
+
+
+
+useEffect(() => {
+  const fetchKmDriveTimeByInterval = async () => {
+    try {
+      const dateObj = new Date(selectedDate);
+      const datestart = formatDateToYYMMDDHHMMSS(dateObj, 0, 0, 0);
+      const dateend = formatDateToYYMMDDHHMMSS(dateObj, 23, 59, 59);
+
+      const response = await fetch('http://localhost:8000/api/vehicle_interval/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plate: selectedTarga,
+          datestart: datestart,
+          dateend: dateend,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore durante il recupero dei dati del mezzo per km e minuti di guida');
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'success' && data.data) {
+        // Estrai solo i campi richiesti dalla risposta
+        const extractedData = {
+          totKmInterval: data.data.totKmInterval,
+          totDriveTime: data.data.totDriveTime,
+        };
+
+        setKmMinutiData([extractedData]); // Per mantenere la struttura a array
+        setNoKmMinutiData(false);
+      } else {
+        setKmMinutiData([]);
+        setNoKmMinutiData(true);
+      }
+    } catch (error) {
+      console.error('Errore durante il fetch dei dati km e minuti:', error);
+      setKmMinutiData([]);
+      setNoKmMinutiData(true);
+    }
+  };
+
+  if (selectedOption === "Minuti di guida in funzione dei km percorsi" && selectedTarga && selectedDate) {
+    fetchKmDriveTimeByInterval();
+  } else {
+    setNoKmMinutiData(true);
+  }
+}, [selectedTarga, selectedDate, selectedOption]);
+
+
+
+
 
   useEffect(() => {
     if (selectedOption === "Esempio") {
@@ -74,21 +245,13 @@ useEffect(() => {
       setNoData(false);
     }
   }, [selectedOption]);
-  useEffect(() => {
-    if (selectedOption === "Numero di eventi giornalieri" && selectedTarga && selectedDate) {
-      filterEventiData();
-    } else {
-      setNoEventiData(true); // Imposta solo il nuovo stato, senza interferire con `noData`
-    }
-  }, [selectedTarga, selectedDate, selectedOption]);
 
-  useEffect(() => {
-    if (selectedOption === "Minuti di guida in funzione dei km percorsi" && selectedTarga && selectedDate) {
-      filterKmMinutiData();
-    } else {
-      setNoKmMinutiData(true);
-    }
-}, [selectedTarga, selectedDate, selectedOption]);
+
+
+
+
+  
+
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -102,100 +265,11 @@ useEffect(() => {
     setSelectedDate(event.target.value);
   };
 
-  const filterData = () => {
-    if (!selectedTarga || !selectedDate) return;
-
-    const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
-
-    const foundActivity = attivitàgiornalieramezzoData.vehicleInfo.filter(
-      (entry) =>
-        entry.datetime.startsWith(selectedDateFormatted) &&
-        attivitàgiornalieramezzoData.targa === selectedTarga
-    );
-
-    if (foundActivity.length > 0) {
-      setFilteredData(foundActivity);
-      setNoData(false);
-    } else {
-      setFilteredData([]);
-      setNoData(true);
-    }
-  };
-
-
-  const filterEventiData = () => {
-    if (!selectedTarga || !selectedDate) return;
-
-    // Formattiamo la data selezionata nel formato YYYY-MM-DD
-    const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
-
-    // Log per debug
-    console.log("Selected date formatted:", selectedDateFormatted);
-
-    // Convertiamo la data del JSON "250205" in formato "YYYY-MM-DD"
-    const jsonYear = "20" + numeroEventiGiornalieriData.date.substring(0, 2); // "2025"
-    const jsonMonth = numeroEventiGiornalieriData.date.substring(2, 4); // "02"
-    const jsonDay = numeroEventiGiornalieriData.date.substring(4, 6); // "05"
-    const jsonDateFormatted = `${jsonYear}-${jsonMonth}-${jsonDay}`; // "2025-02-05"
-
-    // Log per debug
-    console.log("JSON date formatted:", jsonDateFormatted);
-    console.log("JSON targa:", numeroEventiGiornalieriData.targa);
-    console.log("Selected targa:", selectedTarga);
-
-    // Filtriamo se la targa e la data coincidono
-    const foundEvent =
-        numeroEventiGiornalieriData.targa === selectedTarga &&
-        jsonDateFormatted === selectedDateFormatted;
-
-    console.log("Match trovato:", foundEvent);
-
-    if (foundEvent) {
-        setEventiData([numeroEventiGiornalieriData]); // Convertito in array per uniformità
-        setNoEventiData(false);
-    } else {
-        setEventiData([]);
-        setNoEventiData(true);
-    }
-};
-
-const filterKmMinutiData = () => {
-  if (!selectedTarga || !selectedDate) return;
-
-  const selectedDateFormatted = new Date(selectedDate).toISOString().split("T")[0];
-  console.log("Selected Date Formatted:", selectedDateFormatted);
-
-  const jsonDate = numeroKmMinutiGiornalieriData.date;
-  const jsonYear = "20" + jsonDate.substring(0, 2);
-  const jsonMonth = jsonDate.substring(2, 4);
-  const jsonDay = jsonDate.substring(4, 6);
 
 
 
-  const jsonDateFormatted = `${jsonYear}-${jsonMonth}-${jsonDay}`;
 
-  console.log("JSON Date Formatted:", jsonDateFormatted);
 
-  const foundKmMinuti =
-    numeroKmMinutiGiornalieriData.targa === selectedTarga &&
-    jsonDateFormatted === selectedDateFormatted;
-
-  console.log("Found KmMinutiData:", foundKmMinuti);
-
-  if (foundKmMinuti) {
-    // Estrai solo i dati che ti servono
-    const filterData = {
-      totKmInterval: numeroKmMinutiGiornalieriData.totKmInterval,
-      totDriveTime: numeroKmMinutiGiornalieriData.totDriveTime
-    };
-
-    setKmMinutiData([filterData]);
-    setNoKmMinutiData(false);
-  } else {
-    setKmMinutiData([]);
-    setNoKmMinutiData(true);
-  }
-};
 
 
 
