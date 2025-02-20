@@ -1,266 +1,159 @@
 import { useState, useEffect } from "react";
-import { Bar, Pie } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
-import L from "leaflet";  // Importiamo Leaflet per la mappa
-import "leaflet/dist/leaflet.css";  // Importiamo lo stile CSS di Leaflet
-import "leaflet-polylinedecorator/dist/leaflet.polylineDecorator.js"; // Import per polilinee con decoratore (freccia)
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-polylinedecorator/dist/leaflet.polylineDecorator.js";
 
-// Crea l'icona del camioncino (modifica il percorso in base alla posizione effettiva del file)
 const truckIcon = L.icon({
-  iconUrl: "/image.png", // Percorso relativo rispetto alla cartella "public"
-  iconSize: [32, 32], // Dimensione dell'icona (adatta a seconda delle tue necessità)
-  iconAnchor: [16, 32], // Punto di ancoraggio dell'icona (metti la base dell'icona sul punto del marker)
-  popupAnchor: [0, 0], // La finestra del popup apparirà sopra l'icona
+  iconUrl: "/image.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, 0],
 });
 
 const AttivitaDataComponent = ({ data }) => {
+  const [filteredData, setFilteredData] = useState([]);
   const [chartData, setChartData] = useState(null);
-  const [chartType, setChartType] = useState("Bar");
   const [mapVisible, setMapVisible] = useState(false);
-  const [map, setMap] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      const labels = data.map((item) => new Date(item.datetime).toLocaleTimeString());
-      const temperature1 = data.map((item) => item.temperature1);
+    const validData = data.filter((item) => item.kmh > 0);
+    const uniqueTimeSlots = [
+      ...new Set(
+        validData.map((item) => {
+          const date = new Date(item.datetime);
+          const hour = date.getHours();
+          const minute = Math.floor(date.getMinutes() / 15) * 15;
+          return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+        })
+      ),
+    ].sort();
+
+    setAvailableTimeSlots(uniqueTimeSlots);
+
+    if (uniqueTimeSlots.length > 0) {
+      setSelectedTimeSlot(uniqueTimeSlots[0]);
+      filterByTimeSlot(uniqueTimeSlots[0], validData);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (filteredData.length > 0) {
+      const labels = filteredData.map((item) => {
+        const date = new Date(item.datetime);
+        return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      });
 
       const barChartData = {
         labels: labels,
         datasets: [
           {
-            label: "Temperature1",
-            data: temperature1,
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-            borderColor: "rgba(255, 99, 132, 1)",
+            type: "bar",
+            label: "KMH",
+            data: filteredData.map((item) => item.kmh),
+            backgroundColor: "rgba(255, 159, 64, 0.5)",
+            borderColor: "rgba(255, 159, 64, 1)",
             borderWidth: 1,
           },
           {
-            label: "Temperature2",
-            data: data.map((item) => item.temperature2),
-            backgroundColor: "rgba(54, 162, 235, 0.5)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-          {
+            type: "bar",
             label: "Latitude",
-            data: data.map((item) => item.latitude),
+            data: filteredData.map((item) => item.latitude),
             backgroundColor: "rgba(75, 192, 192, 0.5)",
             borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1,
           },
           {
+            type: "bar",
             label: "Longitude",
-            data: data.map((item) => item.longitude),
+            data: filteredData.map((item) => item.longitude),
             backgroundColor: "rgba(153, 102, 255, 0.5)",
             borderColor: "rgba(153, 102, 255, 1)",
             borderWidth: 1,
           },
           {
-            label: "KMH",
-            data: data.map((item) => item.kmh),
-            backgroundColor: "rgba(255, 159, 64, 0.5)",
-            borderColor: "rgba(255, 159, 64, 1)",
-            borderWidth: 1,
-          },
-        ],
-      };
-      const pieChartData = {
-        labels: labels,
-        datasets: [
-          {
-            label: "Temperature1",
-            data: temperature1,
-            backgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-            ],
-            borderColor: "#FF0000",
+            type: "line",
+            label: "KMH Trend",
+            data: filteredData.map((item) => item.kmh),
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
             borderWidth: 2,
-          },
-          {
-            label: "Temperature2",
-            data: data.map((item) => item.temperature2),
-            backgroundColor: [
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-              "#FF6384",
-            ],
-            borderColor: "#0000FF",
-            borderWidth: 2,
-          },
-          {
-            label: "Latitude",
-            data: data.map((item) => item.latitude),
-            backgroundColor: [
-              "#FF9F40",
-              "#FF6384",
-              "#36A2EB",
-              "#4BC0C0",
-              "#9966FF",
-              "#FFCE56",
-            ],
-            borderColor: "#FF5733",
-            borderWidth: 2,
-          },
-          {
-            label: "Longitude",
-            data: data.map((item) => item.longitude),
-            backgroundColor: [
-              "#FF9F40",
-              "#FF6384",
-              "#36A2EB",
-              "#4BC0C0",
-              "#9966FF",
-              "#FFCE56",
-            ],
-            borderColor: "#34FF57",
-            borderWidth: 2,
-          },
-          {
-            label: "KMH",
-            data: data.map((item) => item.kmh),
-            backgroundColor: [
-              "#FF5733",
-              "#FF9F40",
-              "#36A2EB",
-              "#4BC0C0",
-              "#9966FF",
-              "#FFCE56",
-            ],
-            borderColor: "#34FF57",
-            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: "rgba(255, 99, 132, 1)",
+            tension: 0.4, // Smoothed curve effect
           },
         ],
       };
 
-      setChartData({ bar: barChartData, pie: pieChartData });
+      setChartData(barChartData);
     }
-  }, [data]);
+  }, [filteredData]);
+
+  const filterByTimeSlot = (timeSlot, dataToFilter = data) => {
+    const filtered = dataToFilter.filter((item) => {
+      const date = new Date(item.datetime);
+      const hour = date.getHours();
+      const minute = Math.floor(date.getMinutes() / 15) * 15;
+      const timeSlotFormatted = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      return timeSlotFormatted === timeSlot && item.kmh > 0;
+    });
+
+    setFilteredData(filtered);
+    setSelectedTimeSlot(timeSlot);
+  };
+
+  const toggleMapVisibility = () => {
+    setMapVisible((prevState) => !prevState);
+  };
 
   useEffect(() => {
-    if (mapVisible && data && data.length > 0) {
-      if (!map) {
-        const newMap = L.map("map", {
-          scrollWheelZoom: false,
-          maxZoom: 18,
-          minZoom: 3,
-          zoomControl: true,
-        }).setView([data[0].latitude, data[0].longitude], 13);
+    if (mapVisible) {
+      const map = L.map("map").setView([0, 0], 2);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(newMap);
+      filteredData.forEach((item) => {
+        L.marker([item.latitude, item.longitude], { icon: truckIcon })
+          .addTo(map)
+          .bindPopup(`<b>KMH:</b> ${item.kmh}<br/><b>Latitude:</b> ${item.latitude}<br/><b>Longitude:</b> ${item.longitude}`);
+      });
 
-        // Ordina i dati per datetime
-        const sortedData = data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
-
-        const latLngs = [];  // Array per memorizzare le coordinate dei punti
-        for (let i = 0; i < sortedData.length; i++) {
-          const item = sortedData[i];
-          const marker = L.marker([item.latitude, item.longitude], { icon: truckIcon }).addTo(newMap);
-
-          marker.bindPopup(` 
-            <b>Data e Ora:</b> ${new Date(item.datetime).toLocaleString()}<br>
-            <b>Latitudine:</b> ${item.latitude}<br>
-            <b>Longitudine:</b> ${item.longitude}<br>
-            <b>Velocità (KMH):</b> ${item.kmh}<br>
-            <b>Temperatura 1:</b> ${item.temperature1}°C<br>
-            <b>Temperatura 2:</b> ${item.temperature2}°C
-          `);
-
-          latLngs.push([item.latitude, item.longitude]); // Aggiungi la posizione del marker
-
-          // Aggiungi la linea con la freccia solo tra i punti successivi
-          if (i > 0) {
-            const previousPoint = sortedData[i - 1];
-            const currentPoint = item;
-
-            // Traccia la linea tra i punti
-            const line = L.polyline([latLngs[i - 1], latLngs[i]], {
-              color: 'blue',
-              weight: 4,
-              opacity: 0.7,
-            }).addTo(newMap);
-
-            // Aggiungi una freccia alla linea
-            const arrow = L.polylineDecorator(line, {
-              patterns: [
-                {
-                  offset: '100%',
-                  repeat: 0,
-                  symbol: L.Symbol.arrowHead({
-                    pixelSize: 15,
-                    pathOptions: {
-                      fillColor: 'blue',
-                      weight: 2,
-                      opacity: 0.7,
-                    },
-                  }),
-                },
-              ],
-            }).addTo(newMap);
-          }
-        }
-
-        setMap(newMap);
-      }
-    } else if (!mapVisible && map) {
-      map.remove();
-      setMap(null);
+      return () => {
+        map.remove();
+      };
     }
-  }, [mapVisible, data, map]);
-
-  const handleChartTypeChange = (type) => {
-    setMapVisible(false);
-    setChartType(type);
-  };
-
-  const handleMapToggle = () => {
-    setChartType(null);
-    setMapVisible(!mapVisible);
-  };
-
-  if (!chartData) {
-    return <div>Loading...</div>;
-  }
+  }, [mapVisible, filteredData]);
 
   return (
     <div>
       <div className="flex justify-center mb-4">
-        <button
-          onClick={() => handleChartTypeChange("Bar")}
-          className="px-4 py-2 m-2 bg-blue-500 text-white rounded-lg"
+        <select
+          value={selectedTimeSlot}
+          onChange={(e) => filterByTimeSlot(e.target.value)}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
-          Grafico a Barre
-        </button>
-        <button
-          onClick={() => handleChartTypeChange("Pie")}
-          className="px-4 py-2 m-2 bg-green-500 text-white rounded-lg"
-        >
-          Grafico a Torta
-        </button>
-        <button
-          onClick={handleMapToggle}
-          className="px-4 py-2 m-2 bg-yellow-500 text-white rounded-lg"
-        >
-          Mappa
-        </button>
+          {availableTimeSlots.map((timeSlot) => (
+            <option key={timeSlot} value={timeSlot}>
+              {timeSlot}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {!mapVisible && chartType === "Bar" && (
-        <Bar data={chartData.bar} options={{ responsive: true }} />
+      {!mapVisible && chartData && chartData.datasets[0].data.length > 0 && (
+        <Bar data={chartData} options={{ responsive: true }} />
       )}
 
-      {!mapVisible && chartType === "Pie" && (
-        <Pie data={chartData.pie} />
-      )}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={toggleMapVisibility}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg"
+        >
+          {mapVisible ? "Hide Map" : "Show Map"}
+        </button>
+      </div>
 
       {mapVisible && (
         <div
