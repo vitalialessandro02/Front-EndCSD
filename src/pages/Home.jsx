@@ -9,25 +9,21 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch("http://localhost:8000/backend/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // <-- IMPORTANTE
         body: JSON.stringify({ email: email, password: password }),
       });
-
-      const data = await response.json();
-
+  
       if (response.ok) {
-        // Salva il token nel localStorage
-        localStorage.setItem("accessToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-
-        // Aggiorna lo stato per autenticare l'utente
+        // Non devi salvare i token manualmente se stanno nei cookie HttpOnly!
         onLogin(true);
+        console.log("Login effettuato con successo");
       } else {
         setError("Credenziali non valide. Riprova.");
       }

@@ -37,25 +37,28 @@ const Dashboard = () => {
 
 
   const [response, setResponse] = useState('');
+ 
 
-  const fetchToken = async () => {
- try {
-            const response = await fetch('http://127.0.0.1:8000/api/plates/', {
-                method: 'POST',
-                credentials: 'include', // Includi i cookie nella richiesta
-            });
-            const data = await response.json();
-            setResponse(JSON.stringify(data, null, 2));
-        } catch (error) {
-            console.error('Errore durante il recupero delle targhe:', error);
-        }
-};
+  let [plates, setPlates] = useState([]);
 
+// useEffect per caricare le targhe da API
+useEffect(() => {
+  const fetchPlates = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/plates/', {
+        method: 'POST',
+        credentials: 'include',
+      });
 
+      const data = await response.json();
+      setPlates(data.data.veichles);
+    } catch (error) {
+      console.error('Errore durante il recupero delle targhe:', error);
+    }
+  };
 
-
-
-
+  fetchPlates();
+}, []);
 
   useEffect(() => {
     if (selectedOption === "Attività di un determinato mezzo con selezione della data" && selectedTarga && selectedDate) {
@@ -200,34 +203,8 @@ const filterKmMinutiData = () => {
 
   return (
 
-
-
-
-
-
-
-
-
-
-
-
     <div className="min-h-screen bg-gray-100 p-8">
-     <div>
-        <h1>Dashboard</h1>
-        <button onClick={fetchToken}>Richiedi Token</button>
-
-        {token && (
-          <p style={{ marginTop: '10px' }}>
-            <strong>Token ricevuto:</strong> {token}
-          </p>
-        )}
-
-        {error && (
-          <p style={{ color: 'red', marginTop: '10px' }}>
-            Errore: {error}
-          </p>
-        )}
-      </div>
+    
 
 
 
@@ -274,11 +251,12 @@ const filterKmMinutiData = () => {
         <div className="bg-white p-4 rounded-lg shadow-md">
           <label className="block text-lg font-semibold mb-2">Seleziona una targa:</label>
           <select value={selectedTarga} onChange={handleTargaChange} className="p-2 border rounded-lg w-full mb-4">
-            <option value="">Seleziona una targa</option>
-            {targheData.veichles.map((targa, index) => (
+           <option value="">Seleziona una targa</option>
+              {plates.map((targa, index) => (
               <option key={index} value={targa}>{targa}</option>
-            ))}
+                  ))}
           </select>
+
 
           <label className="block text-lg font-semibold mb-2">Seleziona una data:</label>
           <input
