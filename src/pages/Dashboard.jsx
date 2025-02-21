@@ -9,6 +9,11 @@ import EventiGiornalieri from "../components/EventiGiornalieri";
 import KmMinutiGiornalieri from "../components/KmMinutiGiornalieri";
 import MezziGiornalieriComponent from "../components/MezziGiornalieriComponent.jsx";
 
+
+
+
+
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [jsonData, setJsonData] = useState(sampleData);
@@ -176,6 +181,76 @@ useEffect(() => {
 
 
 
+
+
+
+useEffect(() => {
+  const fetchKmDriveTimeByInterval = async () => {
+    try {
+      const dateObj = new Date(selectedDate);
+      const datestart = formatDateToYYMMDDHHMMSS(dateObj, 0, 0, 0);
+      const dateend = formatDateToYYMMDDHHMMSS(dateObj, 23, 59, 59);
+
+      const response = await fetch('http://localhost:8000/api/vehicle_interval/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plate: selectedTarga,
+          datestart: datestart,
+          dateend: dateend,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Errore durante il recupero dei dati del mezzo per km e minuti di guida');
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'success' && data.data) {
+        // Estrai solo i campi richiesti dalla risposta
+        const extractedData = {
+          totKmInterval: data.data.totKmInterval,
+          totDriveTime: data.data.totDriveTime,
+        };
+
+        setKmMinutiData([extractedData]); // Per mantenere la struttura a array
+        setNoKmMinutiData(false);
+      } else {
+        setKmMinutiData([]);
+        setNoKmMinutiData(true);
+
+
+      }
+    } catch (error) {
+      console.error('Errore durante il fetch dei dati km e minuti:', error);
+      setKmMinutiData([]);
+      setNoKmMinutiData(true);
+    }
+  };
+
+  if (selectedOption === "Minuti di guida in funzione dei km percorsi" && selectedTarga && selectedDate) {
+    fetchKmDriveTimeByInterval();
+  } else {
+    setNoKmMinutiData(true);
+  }
+}, [selectedTarga, selectedDate, selectedOption]);
+
+
+
+
+
+
+        
+
+
+
+
+
+
 useEffect(() => {
   if (selectedOption === "Mezzi in servizio giornaliero") {
     const fetchMezziGiornalieri = async () => {
@@ -319,7 +394,17 @@ const handleOptionChange = (event) => {
         </div>
       )}
 
+{selectedOption === "Numero di eventi giornalieri" && eventiData && eventiData.length > 0 && (
+  <div className="chart-section">
+    <EventiGiornalieri data={eventiData} />
+  </div>
+)}
 
+{selectedOption === "Minuti di guida in funzione dei km percorsi" && kmMinutiData && kmMinutiData.length > 0 && (
+  <div className="chart-section">
+    <KmMinutiGiornalieri data={kmMinutiData} />
+  </div>
+)}
 
       {selectedOption === "Mezzi in servizio giornaliero" && (
         <div className="bg-white p-4 rounded-lg shadow-md">
