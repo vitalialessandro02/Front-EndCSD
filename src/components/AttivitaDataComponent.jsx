@@ -18,6 +18,7 @@ const AttivitaDataComponent = ({ data }) => {
   const [mapVisible, setMapVisible] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [map, setMap] = useState(null);
 
   useEffect(() => {
     const validData = data.filter((item) => item.kmh > 0);
@@ -103,28 +104,90 @@ const AttivitaDataComponent = ({ data }) => {
 
     setFilteredData(filtered);
     setSelectedTimeSlot(timeSlot);
+
+    if (map) {
+      updateMap(filtered);
+    }
   };
 
-  const toggleMapVisibility = () => {
-    setMapVisible((prevState) => !prevState);
+  const updateMap = (filtered) => {
+    if (map) {
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+          map.removeLayer(layer);
+        }
+      });
+
+      const sortedData = filtered.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+      const latLngs = [];
+      for (let i = 0; i < sortedData.length; i++) {
+        const item = sortedData[i];
+        const marker = L.marker([item.latitude, item.longitude], { icon: truckIcon }).addTo(map);
+
+        marker.bindPopup(` 
+          <b>Data e Ora:</b> ${new Date(item.datetime).toLocaleString()}<br>
+          <b>Latitudine:</b> ${item.latitude}<br>
+          <b>Longitudine:</b> ${item.longitude}<br>
+          <b>Velocità (KMH):</b> ${item.kmh}
+        `);
+
+        latLngs.push([item.latitude, item.longitude]);
+
+        if (i > 0) {
+          const line = L.polyline([latLngs[i - 1], latLngs[i]], {
+            color: "blue",
+            weight: 4,
+            opacity: 0.7,
+          }).addTo(map);
+
+          const arrow = L.polylineDecorator(line, {
+            patterns: [
+              {
+                offset: "100%",
+                repeat: 0,
+                symbol: L.Symbol.arrowHead({
+                  pixelSize: 15,
+                  pathOptions: {
+                    fillColor: "blue",
+                    weight: 2,
+                    opacity: 0.7,
+                  },
+                }),
+              },
+            ],
+          }).addTo(map);
+        }
+      }
+    }
   };
 
   useEffect(() => {
-    if (mapVisible) {
-      const map = L.map("map").setView([0, 0], 2);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    if (mapVisible && data && data.length > 0) {
+      if (!map) {
+        const newMap = L.map("map", {
+          scrollWheelZoom: false,
+          maxZoom: 18,
+          minZoom: 3,
+          zoomControl: true,
+        }).setView([data[0].latitude, data[0].longitude], 13);
 
-      filteredData.forEach((item) => {
-        L.marker([item.latitude, item.longitude], { icon: truckIcon })
-          .addTo(map)
-          .bindPopup(`<b>KMH:</b> ${item.kmh}<br/><b>Latitude:</b> ${item.latitude}<br/><b>Longitude:</b> ${item.longitude}`);
-      });
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(newMap);
 
-      return () => {
-        map.remove();
-      };
+        setMap(newMap);
+        updateMap(filteredData); // Update map with filtered data when it first loads
+      }
+    } else if (!mapVisible && map) {
+      map.remove();
+      setMap(null);
     }
-  }, [mapVisible, filteredData]);
+  }, [mapVisible, data, filteredData]);
+
+  const handleMapToggle = () => {
+    setMapVisible(!mapVisible);
+  };
 
   return (
     <div>
@@ -140,20 +203,17 @@ const AttivitaDataComponent = ({ data }) => {
             </option>
           ))}
         </select>
+        <button
+          onClick={handleMapToggle}
+          className="px-4 py-2 m-2 bg-yellow-500 text-white rounded-lg"
+        >
+          Mappa
+        </button>
       </div>
 
       {!mapVisible && chartData && chartData.datasets[0].data.length > 0 && (
         <Bar data={chartData} options={{ responsive: true }} />
       )}
-
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={toggleMapVisibility}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg"
-        >
-          {mapVisible ? "Hide Map" : "Show Map"}
-        </button>
-      </div>
 
       {mapVisible && (
         <div
