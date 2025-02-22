@@ -19,6 +19,8 @@ const AttivitaDataComponent = ({ data }) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [map, setMap] = useState(null);
+  const [showMapButtons, setShowMapButtons] = useState(false);
+  const [showGraphButtons, setShowGraphButtons] = useState(false);
 
   useEffect(() => {
     const validData = data.filter((item) => item.kmh > 0);
@@ -84,7 +86,7 @@ const AttivitaDataComponent = ({ data }) => {
             borderWidth: 2,
             pointRadius: 3,
             pointBackgroundColor: "rgba(255, 99, 132, 1)",
-            tension: 0.4, // Smoothed curve effect
+            tension: 0.4,
           },
         ],
       };
@@ -113,7 +115,7 @@ const AttivitaDataComponent = ({ data }) => {
   const updateMap = (filtered) => {
     if (map) {
       map.eachLayer((layer) => {
-        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline || layer instanceof L.PolylineDecorator) {
           map.removeLayer(layer);
         }
       });
@@ -177,7 +179,7 @@ const AttivitaDataComponent = ({ data }) => {
         }).addTo(newMap);
 
         setMap(newMap);
-        updateMap(filteredData); // Update map with filtered data when it first loads
+        updateMap(filteredData);
       }
     } else if (!mapVisible && map) {
       map.remove();
@@ -186,7 +188,23 @@ const AttivitaDataComponent = ({ data }) => {
   }, [mapVisible, data, filteredData]);
 
   const handleMapToggle = () => {
-    setMapVisible(!mapVisible);
+    setMapVisible(true); // Mostra la mappa
+    setShowGraphButtons(false); // Nascondi il grafico
+    setShowMapButtons(true); // Mostra i pulsanti per il tragitto
+  };
+
+  const handleGraphToggle = () => {
+    setShowGraphButtons(true); // Mostra il grafico
+    setShowMapButtons(false); // Nascondi i pulsanti della mappa
+    setMapVisible(false); // Nascondi la mappa
+  };
+
+  const showFullRoute = () => {
+    updateMap(data); // Mostra il tragitto completo
+  };
+
+  const showRouteByTimeSlot = () => {
+    updateMap(filteredData); // Mostra il tragitto per fascia oraria
   };
 
   return (
@@ -204,6 +222,12 @@ const AttivitaDataComponent = ({ data }) => {
           ))}
         </select>
         <button
+          onClick={handleGraphToggle}
+          className="px-4 py-2 m-2 bg-green-500 text-white rounded-lg"
+        >
+          Grafico
+        </button>
+        <button
           onClick={handleMapToggle}
           className="px-4 py-2 m-2 bg-yellow-500 text-white rounded-lg"
         >
@@ -211,10 +235,30 @@ const AttivitaDataComponent = ({ data }) => {
         </button>
       </div>
 
-      {!mapVisible && chartData && chartData.datasets[0].data.length > 0 && (
+      {/* Mostra il grafico se il pulsante "Grafico" è stato selezionato */}
+      {showGraphButtons && chartData && chartData.datasets[0].data.length > 0 && (
         <Bar data={chartData} options={{ responsive: true }} />
       )}
 
+      {/* Mostra i pulsanti per scegliere il tipo di tragitto quando "Mappa" è selezionato */}
+      {showMapButtons && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={showFullRoute}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg m-2"
+          >
+            Tragitto Completo
+          </button>
+          <button
+            onClick={showRouteByTimeSlot}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg m-2"
+          >
+            Tragitto per Fascia Oraria
+          </button>
+        </div>
+      )}
+
+      {/* La mappa */}
       {mapVisible && (
         <div
           id="map"
