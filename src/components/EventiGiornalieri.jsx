@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import "../styles/EventiGiornalieri.css"
 
 const EventiGiornalieri = ({ data }) => {
   if (!data || data.length === 0) return null;
@@ -26,16 +27,16 @@ const EventiGiornalieri = ({ data }) => {
     <div className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-lg">
       <h2 className="text-xl font-bold mb-4">Numero di Eventi Giornalieri</h2>
 
-      <div className="flex justify-center mb-4">
+      <div className="button-container">
         <button
           onClick={() => setChartType("Bar")}
-          className="px-4 py-2 m-2 bg-blue-500 text-white rounded-lg"
+          className="button button-a-barre"
         >
           Grafico a Barre
         </button>
         <button
           onClick={() => setChartType("Pie")}
-          className="px-4 py-2 m-2 bg-green-500 text-white rounded-lg"
+          className="button button-a-torta"
         >
           Grafico a Torta
         </button>

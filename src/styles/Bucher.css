@@ -1,35 +1,79 @@
-.bucher-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f7fafc;
-  text-align: center;
+/* Riquadro principale della dashboard con sfondo traslucido */
+.dashboard-wrapper {
+  background-color: rgba(255, 255, 255, 0.9);  /* Sfondo bianco semi-trasparente */
+  padding: 30px;
+  border-radius: 15px;  /* Angoli arrotondati per effetto moderno */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombra leggera per far risaltare il contenuto */
+  margin: 20px auto; /* Margine per centrare il contenuto */
+  max-width: 1200px; /* Limita la larghezza per una visualizzazione migliore su schermi grandi */
+  overflow: hidden; /* Nasconde il contenuto che esce dal bordo */
 }
 
-.bucher-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  color: #2b6cb0;
+/* Stile per il titolo della dashboard */
+h1 {
+  font-size: 2.5rem;  /* Titolo grande e chiaro */
+  font-weight: 700;
+  color: #4c51bf;  /* Colore blu per il titolo */
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.8);  /* Sfondo per il titolo */
+  padding: 10px;
+  border-radius: 8px; /* Angoli arrotondati */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombra per dare profondità */
 }
 
-.bucher-content {
+/* Scritte generali e le etichette (come "Seleziona un'opzione") */
+label {
   font-size: 1.25rem;
-  color: #4a5568;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  display: block; /* Per separare le etichette dal contenuto sottostante */
+  background-color: rgba(255, 255, 255, 0.9);  /* Sfondo per visibilità */
+  padding: 8px 12px;
+  border-radius: 5px; /* Angoli arrotondati */
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Ombra per risaltare */
 }
 
-/* Stile per la freccia in alto a sinistra */
+/* Menu a tendina e input con sfondo */
+select, input[type="date"] {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.9);  /* Sfondo semi-trasparente */
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%; /* Per farli occupare tutto lo spazio disponibile */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombra per evidenziarli */
+}
+
+/* Messaggio di errore per "No data available" */
+.no-data-message {
+  font-size: 1.125rem;
+  color: #e53e3e;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.8); /* Sfondo per evidenziare il messaggio */
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+/* Pulsante indietro con sfondo */
 .back-button {
   position: fixed;
   top: 20px;
   left: 20px;
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.9);  /* Sfondo semi-trasparente per il bottone */
+  border-radius: 8px;
+  padding: 10px;
   cursor: pointer;
-  font-size: 24px;
-  color: #333;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombra per evidenziarlo */
+}
+
+.back-button:hover {
+  background-color: rgba(76, 81, 191, 0.1); /* Hover con colore più scuro */
 }
 
 .back-icon {
@@ -37,7 +81,69 @@
   height: 30px;
 }
 
-.back-button:hover {
-  color: #4c51bf;
+/* Sezione grafico o dati */
+.chart-section, .activity-section, .example-section {
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Ombra per evidenziare la sezione */
+  background-color: rgba(255, 255, 255, 0.9);  /* Sfondo bianco semi-trasparente */
 }
 
+/* Riquadro dei contenuti della sezione */
+.grid-section {
+  background-color: rgba(255, 255, 255, 0.9);  /* Sfondo per la griglia */
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Ombra per ogni riquadro */
+}
+
+/* Sezione grafico esempio */
+.example-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.9); /* Sfondo semi-trasparente */
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Ombra per evidenziare */
+}
+
+.chart-section {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  height: 100%; /* Imposta l'altezza al 100% del contenitore */
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Allinea il contenuto */
+}
+
+.chart {
+  background-color: white;
+  padding: 0; /* Rimuove il padding per evitare spazi extra */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  height: 100%; /* Imposta l'altezza al 100% per evitare spazi vuoti */
+  width: 100%; /* Imposta la larghezza al 100% */
+  display: flex;
+}
+
+.chart-container canvas {
+  background-color: transparent !important;
+  width: 100% !important;
+  height: 100% !important; /* Assicurati che il canvas occupi tutta l'altezza */
+}
+
+
+.chart-section {
+  background: rgba(255, 255, 255, 0.7); /* Sfondo bianco semi-trasparente */
+  backdrop-filter: blur(10px); /* Effetto glassmorphism */
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombra morbida */
+  margin-top: 20px;
+  width: 700px;
+}

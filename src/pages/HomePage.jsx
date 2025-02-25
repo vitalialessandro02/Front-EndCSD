@@ -1,37 +1,42 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
+
 const HomePage = () => {
-  const [selectedCompany, setSelectedCompany] = useState("");
   const navigate = useNavigate();
 
-  const handleSelectionChange = (event) => {
-    const value = event.target.value;
-    setSelectedCompany(value);
+  // Funzione per gestire il logout (senza chiamata fetch)
+  const handleLogout = () => {
+    // Reindirizza direttamente alla pagina di login
+    navigate("/login");
+  };
 
-    if (value === "axitea") {
+  const handleSelectionChange = (event) => {
+    const choice = event.target.value;
+    // Naviga in base alla scelta
+    if (choice === "Axitea") {
       navigate("/dashboard");
-    } else if (value === "bucher") {
+    } else if (choice === "Bucher") {
       navigate("/bucher");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-6">Benvenuto</h1>
-      <label htmlFor="company-selection" className="text-xl mb-2">
-        Seleziona un'opzione:
-      </label>
-      <select
-        id="company-selection"
-        value={selectedCompany}
-        onChange={handleSelectionChange}
-        className="p-2 border rounded-lg"
-      >
-        <option value="">-- Seleziona --</option>
-        <option value="axitea">Axitea</option>
-        <option value="bucher">Bucher</option>
-      </select>
+    <div className="home-wrapper">
+      <div className="logout-container">
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+      </div>
+      <img src="/cosmari-XL.png" alt="Logo Cosmari" className="logo" />
+      <div className="home-container">
+        <h1 className="title">Seleziona un'azienda</h1>
+        <select defaultValue="" onChange={handleSelectionChange} className="dropdown">
+          <option value="">Seleziona un'opzione</option>
+          <option value="Axitea">Axitea</option>
+          <option value="Bucher">Bucher</option>
+        </select>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,55 @@
+/* Contenitore dei pulsanti (orario, grafico, mappa) */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Spazio tra i pulsanti */
+    margin-bottom: 20px; /* Distanza dal contenuto sottostante */
+  }
+  
+  /* Contenitore dei pulsanti mappa (tragitto completo, tragitto per fascia oraria) */
+  .map-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Spazio tra i pulsanti */
+    margin-top: 20px; /* Distanza dal contenuto precedente */
+  }
+  
+/* Pulsante generico con sfondo bianco trasparente */
+.button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: black; /* Colore del testo nero */
+    cursor: pointer;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.3); /* Sfondo bianco trasparente */
+    border: 2px solid rgba(255, 255, 255, 0.6); /* Bordo bianco trasparente */
+    transition: all 0.3s ease; /* Aggiunta transizione per effetto hover */
+  }
+  
+  /* Pulsante "Grafico" con bordo bianco trasparente */
+  .button-grafico {
+    border-color: rgba(255, 99, 132, 0.6); /* Bordo rosso trasparente */
+  }
+  
+  /* Pulsante "Mappa" con bordo bianco trasparente */
+  .button-mappa {
+    border-color: rgba(255, 205, 50, 0.6); /* Bordo giallo trasparente */
+  }
+  
+  /* Pulsante "Tragitto Completo" con bordo blu trasparente */
+  .button-tragitto-completo {
+    border-color: rgba(54, 162, 235, 0.6); /* Bordo blu trasparente */
+  }
+  
+  /* Pulsante "Tragitto per Fascia Oraria" con bordo verde trasparente */
+  .button-tragitto-fascia {
+    border-color: rgba(75, 192, 192, 0.6); /* Bordo verde trasparente */
+  }
+  
+  /* Aggiungi effetti hover per cambiare l'intensità del bordo e sfondo */
+  .button:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Cambia sfondo quando si passa sopra */
+    border-color: rgba(0, 0, 0, 0.8); /* Aumenta opacità bordo quando hover */
+    color: black; /* Mantieni il colore del testo nero */
+  }
+  

@@ -17,7 +17,7 @@ import MezziGiornalieriComponent from "../components/MezziGiornalieriComponent.j
 const Dashboard = () => {
   const navigate = useNavigate();
   const [jsonData, setJsonData] = useState(sampleData);
-  const [selectedOption, setSelectedOption] = useState("Attività di un determinato mezzo con selezione della data");
+  const [selectedOption, setSelectedOption] = useState("");
   const [chartType, setChartType] = useState("Bar");
   const [mapVisible, setMapVisible] = useState(false);
   const [selectedTarga, setSelectedTarga] = useState("");
@@ -317,7 +317,7 @@ const handleOptionChange = (event) => {
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="dashboard-wrapper">
     
 
 
@@ -345,6 +345,7 @@ const handleOptionChange = (event) => {
           onChange={handleSelectChange}
           className="p-2 border rounded-lg"
         >
+          <option value="">-- Seleziona --</option>
           <option value="Mezzi in servizio giornaliero">Mezzi in servizio giornaliero</option>
           <option value="Attività di un determinato mezzo con selezione della data">
             Attività di un determinato mezzo con selezione della data
@@ -377,7 +378,7 @@ const handleOptionChange = (event) => {
           />
 
           {noData ? (
-            <p className="text-center text-red-500 text-lg font-semibold">No data available</p>
+            <p className="text-center text-red-500 text-lg font-semibold"></p>
 
           ) : (
             <div className="chart-section">

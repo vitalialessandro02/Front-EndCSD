@@ -1,0 +1,93 @@
+/* Contenitore principale */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(243, 244, 246, 0.9); /* Maggiore opacità per leggibilità */
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    overflow: hidden; /* Prevents buttons from overflowing */
+}
+
+.register-form, .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    background: transparent; /* Makes background transparent */
+    border-radius: 10px;
+    box-shadow: none; /* Removes shadow for the form */
+}
+
+.register-button, .login-button, .switch-button {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 15px;
+}
+
+.login-button {
+    background: #007bff;
+}
+
+.login-button:hover {
+    background: #0056b3;
+}
+
+.register-button {
+    background: #28a745;
+}
+
+.register-button:hover {
+    background: #218838;
+}
+
+.switch-button {
+    background: #ffc107;
+}
+
+.switch-button:hover {
+    background: #e0a800;
+}
+
+/* Stile per il contenitore della password con pulsante di visibilità */
+.password-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Separazione tra il campo di input e il pulsante per la visibilità */
+.password-container input {
+    flex: 1;
+    padding-right: 50px; /* Aumentato lo spazio a destra per il pulsante */
+}
+
+/* Pulsante per la visibilità della password */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #007bff;
+}
+
+/* Hover per il pulsante */
+.toggle-password:hover {
+    color: #0056b3;
+}

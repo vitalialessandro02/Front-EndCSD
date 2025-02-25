@@ -4,6 +4,7 @@ import { Chart as ChartJS } from "chart.js/auto";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-polylinedecorator/dist/leaflet.polylineDecorator.js";
+import '../styles/AttivitaData.css'; 
 
 const truckIcon = L.icon({
   iconUrl: "/image.png",
@@ -209,11 +210,11 @@ const AttivitaDataComponent = ({ data }) => {
 
   return (
     <div>
-      <div className="flex justify-center mb-4">
+      <div className="button-container">
         <select
           value={selectedTimeSlot}
           onChange={(e) => filterByTimeSlot(e.target.value)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          className="button button-grafico"
         >
           {availableTimeSlots.map((timeSlot) => (
             <option key={timeSlot} value={timeSlot}>
@@ -223,13 +224,13 @@ const AttivitaDataComponent = ({ data }) => {
         </select>
         <button
           onClick={handleGraphToggle}
-          className="px-4 py-2 m-2 bg-green-500 text-white rounded-lg"
+          className="button button-grafico"
         >
           Grafico
         </button>
         <button
           onClick={handleMapToggle}
-          className="px-4 py-2 m-2 bg-yellow-500 text-white rounded-lg"
+          className="button button-mappa"
         >
           Mappa
         </button>
@@ -242,16 +243,16 @@ const AttivitaDataComponent = ({ data }) => {
 
       {/* Mostra i pulsanti per scegliere il tipo di tragitto quando "Mappa" è selezionato */}
       {showMapButtons && (
-        <div className="flex justify-center mt-4">
+        <div className="map-button-container">
           <button
             onClick={showFullRoute}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg m-2"
+            className="button button-tragitto-completo"
           >
             Tragitto Completo
           </button>
           <button
             onClick={showRouteByTimeSlot}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg m-2"
+            className="button button-tragitto-fascia"
           >
             Tragitto per Fascia Oraria
           </button>
@@ -263,7 +264,7 @@ const AttivitaDataComponent = ({ data }) => {
         <div
           id="map"
           style={{
-            height: "600px",
+            height: "400px",
             width: "100%",
             marginTop: "20px",
             border: "1px solid #ccc",
