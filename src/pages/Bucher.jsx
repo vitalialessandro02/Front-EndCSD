@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import '../styles/Bucher.css';
 import DatiMissioni from '../components/DatiMissioni';
 import DatiTelemetria from '../components/DatiTelemetria';
-
-
 const Bucher = () => {
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState('');
