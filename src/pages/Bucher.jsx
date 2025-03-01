@@ -112,74 +112,104 @@ const Bucher = () => {
 
   const fetchTelemetriaData = async () => {
     try {
-      const dateObj = new Date(date);
-      const starttime = Math.floor(dateObj.setHours(0, 0, 0, 0) / 1000);
-      const endtime = Math.floor(dateObj.setHours(23, 59, 59, 999) / 1000);
-  
-      const snmachine = plateT === "Intera Flotta"
-          ? platesT.filter(plate => plate !== "Intera Flotta")
-          : [plateT];
-  
-      const queryParams = new URLSearchParams({
-          starttime: starttime.toString(),
-          endtime: endtime.toString(),
-      });
-  
-      snmachine.forEach(plate => queryParams.append("snmachine", plate));
-  
-      const url = `http://localhost:8000/api/assets-tracking/?${queryParams.toString()}`;
-      console.log("Fetching from URL:", url);
-  
-      const response = await fetch(url, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-              'Content-Type': 'application/json',
-          }
-      });
-  
-      if (!response.ok) {
-          throw new Error(`Errore durante il recupero dei dati telemetria: ${response.status}`);
-      }
-  
-      const result = await response.json();
-  
-      if (result.status === 'success' && result.data) {
-          const filteredData = result.data.filter(item => 
-            plateT === "Intera Flotta" || 
-            item.asset.name.trim().toUpperCase() === plateT.trim().toUpperCase()
-          );          
-     
-          console.log("Dati filtrati:", filteredData);
-          
-          const formattedData = filteredData.map(item => ({
-              name: item.asset.name,
-              start_time: item.sweeper.start_time,
-              work_time: item.sweeper.work_time,
-              distance: Number(item.sweeper.distance).toFixed(2),
-              work_dist: Number(item.sweeper.work_dist).toFixed(2),
-              fuel_cons: Number(item.sweeper.engine.fuel_cons),
-              altitude: Number(item.altitude),
-              latitude: Number(item.latitude),
-              longitude: Number(item.longitude),
-              speed: Number(item.speed),
-              sample_time: item.sample_time, // Aggiunto campo sample_time
-          }));
-           // Sommare tutte le distanze totali
-      const totalDistanceSum = formattedData
-      .reduce((sum, item) => sum + Number(item.distance), 0)
-      .toFixed(2);
+        const dateObj = new Date(date);
+        const starttime = Math.floor(dateObj.setHours(0, 0, 0, 0) / 1000);
+        const endtime = Math.floor(dateObj.setHours(23, 59, 59, 999) / 1000);
 
-    console.log("Somma totale della distanza:", totalDistanceSum);
-          setTelemetriaData(formattedData);
-      } else {
-          setTelemetriaData([]);
-      }
+        const snmachine = plateT === "Intera Flotta"
+            ? platesT.filter(plate => plate !== "Intera Flotta")
+            : [plateT];
+
+        const queryParams = new URLSearchParams({
+            starttime: starttime.toString(),
+            endtime: endtime.toString(),
+        });
+
+        snmachine.forEach(plate => queryParams.append("snmachine", plate));
+
+        const url = `http://localhost:8000/api/assets-tracking/?${queryParams.toString()}`;
+        console.log("Fetching from URL:", url);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore durante il recupero dei dati telemetria: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status === 'success' && result.data) {
+            const filteredData = result.data.filter(item => 
+                plateT === "Intera Flotta" || 
+                item.asset.name.trim().toUpperCase() === plateT.trim().toUpperCase()
+            );
+
+            console.log("Dati filtrati:", filteredData);
+
+            const formattedData = filteredData.map(item => ({
+                name: item.asset.name,
+                start_time: item.sweeper.start_time,
+                work_time: item.sweeper.work_time,
+                distance: Number(item.sweeper.distance),
+                work_dist: Number(item.sweeper.work_dist),
+                fuel_cons: Number(item.sweeper.engine.fuel_cons),
+                altitude: Number(item.altitude),
+                latitude: Number(item.latitude),
+                longitude: Number(item.longitude),
+                speed: Number(item.speed),
+                sample_time: item.sample_time,
+            }));
+
+            const totalDistanceSum = formattedData.reduce((sum, item) => sum + item.distance, 0).toFixed(2);
+            const totalWorkDistSum = formattedData.reduce((sum, item) => sum + item.work_dist, 0).toFixed(2);
+
+            // Calcolo del consumo carburante corretto
+            const fuelConsumptionByVehicle = {};
+            formattedData.forEach(item => {
+                if (!fuelConsumptionByVehicle[item.name]) {
+                    fuelConsumptionByVehicle[item.name] = [];
+                }
+                fuelConsumptionByVehicle[item.name].push(item.fuel_cons);
+            });
+
+            let totalFuelCons = 0;
+            Object.values(fuelConsumptionByVehicle).forEach(consumptions => {
+                const first = Math.min(...consumptions);
+                const last = Math.max(...consumptions);
+                totalFuelCons += Math.max(0, last - first);
+            });
+            totalFuelCons = totalFuelCons.toFixed(2);
+
+            const avgSpeed = (formattedData.reduce((sum, item) => sum + item.speed, 0) / formattedData.length).toFixed(2);
+
+            console.log("Somma totale della distanza:", totalDistanceSum);
+            console.log("Somma totale della distanza di lavoro:", totalWorkDistSum);
+            console.log("Consumo totale di carburante:", totalFuelCons);
+            console.log("Velocità media:", avgSpeed);
+
+            setTelemetriaData({
+                totalDistanceSum,
+                totalWorkDistSum,
+                totalFuelCons,
+                avgSpeed,
+                details: formattedData
+            });
+        } else {
+            setTelemetriaData([]);
+        }
     } catch (error) {
-      console.error('Errore durante il fetch dei dati telemetria:', error);
-      setTelemetriaData([]);
+        console.error('Errore durante il fetch dei dati telemetria:', error);
+        setTelemetriaData([]);
     }
-  };
+};
+
+
 
   
 
@@ -253,12 +283,13 @@ const Bucher = () => {
       )}
       
       {selectedOption === "telemetria" && (
-        telemetriaData.length > 0 ? (
-          <DatiTelemetria data={telemetriaData} />
-        ) : (
-          <p className="no-data-message"></p>
-        )
-      )}
+    telemetriaData && Object.keys(telemetriaData).length > 0 ? (
+        <DatiTelemetria data={telemetriaData} />
+    ) : (
+        <p className="no-data-message">Nessun dato disponibile</p>
+    )
+)}
+
     </div>
   );
   
