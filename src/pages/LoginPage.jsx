@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Login = ({ onLogin, switchToRegister }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // ✅ La password è gestita in uno stato sicuro
+  const [password, setPassword] = useState(""); 
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -47,7 +47,7 @@ const Login = ({ onLogin, switchToRegister }) => {
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
           required 
-          autoComplete="email" // ✅ Suggerimento sicuro per il browser
+          autoComplete="email" 
         />
         <div className="password-container">
           <input 
@@ -57,7 +57,7 @@ const Login = ({ onLogin, switchToRegister }) => {
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
-            autoComplete="current-password" // ✅ Risolve il warning nel browser
+            autoComplete="current-password" 
           />
           <button 
             type="button" 
