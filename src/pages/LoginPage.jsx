@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
+import { useAuth } from "../context/AuthContext";
+
+
 
 const Login = ({ onLogin, switchToRegister }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(""); // ✅ La password è gestita in uno stato sicuro
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,7 +25,7 @@ const Login = ({ onLogin, switchToRegister }) => {
       });
 
       if (response.ok) {
-        onLogin(true);
+        setIsAuthenticated(true);
         navigate("/home");
       } else {
         setError("Credenziali non valide. Riprova.");
@@ -43,6 +47,7 @@ const Login = ({ onLogin, switchToRegister }) => {
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
           required 
+          autoComplete="email" // ✅ Suggerimento sicuro per il browser
         />
         <div className="password-container">
           <input 
@@ -52,6 +57,7 @@ const Login = ({ onLogin, switchToRegister }) => {
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
+            autoComplete="current-password" // ✅ Risolve il warning nel browser
           />
           <button 
             type="button" 
@@ -68,6 +74,9 @@ const Login = ({ onLogin, switchToRegister }) => {
     </div>
   );
 };
+
+
+
 
 const Register = ({ switchToLogin }) => {
   const [email, setEmail] = useState("");

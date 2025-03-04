@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
-
+import { useAuth } from "../context/AuthContext";
 const HomePage = () => {
   const navigate = useNavigate();
 
-  // Funzione per gestire il logout (senza chiamata fetch)
-  const handleLogout = () => {
-    // Reindirizza direttamente alla pagina di login
+
+  const { setIsAuthenticated } = useAuth();
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:8000/backend/logout/", {
+      method: "POST",
+      credentials: "include",
+    });
+    setIsAuthenticated(false);
     navigate("/login");
   };
 
