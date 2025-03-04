@@ -1,27 +1,45 @@
-/* Contenitore dei pulsanti (orario, grafico, mappa) */
+/* Contenitore dei pulsanti */
 .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px; /* Spazio tra i pulsanti */
-    margin-bottom: 20px; /* Distanza dal contenuto sottostante */
-  }
-  .button {
-    padding: 10px 20px;
-    border-radius: 8px;
-    color: black; /* Colore del testo nero */
-    cursor: pointer;
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.3); /* Sfondo bianco trasparente */
-    border: 2px solid rgba(255, 255, 255, 0.6); /* Bordo bianco trasparente */
-    transition: all 0.3s ease; /* Aggiunta transizione per effetto hover */
-  }
-  
-  /* Pulsante "Grafico" con bordo bianco trasparente */
-  .button-a-barre {
-    border-color: rgba(255, 99, 132, 0.6); /* Bordo rosso trasparente */
-  }
-  
-  /* Pulsante "Mappa" con bordo bianco trasparente */
-  .button-a-torta {
-    border-color: rgba(255, 205, 50, 0.6); /* Bordo giallo trasparente */
-  }
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* Spazio tra i pulsanti */
+  margin-bottom: 20px; /* Distanza dal contenuto sottostante */
+}
+
+/* Stile generale dei pulsanti */
+.button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: black; /* Colore del testo nero */
+  cursor: pointer;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.3); /* Sfondo bianco trasparente */
+  border: 2px solid rgba(255, 255, 255, 0.6); /* Bordo bianco trasparente */
+  transition: all 0.3s ease; /* Aggiunta transizione per effetto hover */
+}
+
+/* Pulsante per Dati Giornalieri */
+.button-daily {
+  border-color: rgba(54, 162, 235, 0.6); /* Bordo blu trasparente */
+}
+
+/* Pulsante per Dati Settimanali */
+.button-weekly {
+  border-color: rgba(75, 192, 192, 0.6); /* Bordo verde acqua trasparente */
+}
+
+/* Pulsante "Grafico a Barre" */
+.button-a-barre {
+  border-color: rgba(255, 99, 132, 0.6); /* Bordo rosso trasparente */
+}
+
+/* Pulsante "Grafico a Torta" */
+.button-a-torta {
+  border-color: rgba(255, 205, 50, 0.6); /* Bordo giallo trasparente */
+}
+
+/* Effetto hover per tutti i pulsanti */
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.5); /* Sfondo leggermente più visibile */
+  transform: scale(1.05); /* Leggera espansione */
+}

@@ -1,27 +1,44 @@
-/* Contenitore dei pulsanti (orario, grafico, mappa) */
+/* Contenitore dei pulsanti */
 .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px; /* Spazio tra i pulsanti */
-    margin-bottom: 20px; /* Distanza dal contenuto sottostante */
-  }
-  .button {
-    padding: 10px 20px;
-    border-radius: 8px;
-    color: black; /* Colore del testo nero */
-    cursor: pointer;
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.3); /* Sfondo bianco trasparente */
-    border: 2px solid rgba(255, 255, 255, 0.6); /* Bordo bianco trasparente */
-    transition: all 0.3s ease; /* Aggiunta transizione per effetto hover */
-  }
-  
-  /* Pulsante "Grafico" con bordo bianco trasparente */
-  .button-a-barre {
-    border-color: rgba(255, 99, 132, 0.6); /* Bordo rosso trasparente */
-  }
-  
-  /* Pulsante "Mappa" con bordo bianco trasparente */
-  .button-a-torta {
-    border-color: rgba(255, 205, 50, 0.6); /* Bordo giallo trasparente */
-  }
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Stili di base per tutti i pulsanti */
+.button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+/* Pulsanti per la selezione dati */
+.button-daily {
+  border-color: rgba(54, 162, 235, 0.6); /* Blu */
+}
+
+.button-weekly {
+  border-color: rgba(75, 192, 192, 0.6); /* Verde acqua */
+}
+
+/* Pulsanti per i grafici */
+.button-a-barre {
+  border-color: rgba(255, 99, 132, 0.6); /* Rosso */
+}
+
+.button-a-torta {
+  border-color: rgba(255, 205, 50, 0.6); /* Giallo */
+}
+
+/* Effetto hover */
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-width: 3px;
+}
