@@ -397,13 +397,21 @@ const handleOptionChange = (event) => {
 
 {selectedOption === "Numero di eventi giornalieri" && eventiData && eventiData.length > 0 && (
   <div className="chart-section">
-    <EventiGiornalieri data={eventiData} />
+    <EventiGiornalieri  
+      data={eventiData} 
+      selectedTarga={selectedTarga}  // Passa direttamente la targa selezionata
+      selectedDate={selectedDate}    // Passa direttamente la data selezionata
+    />
   </div>
 )}
 
 {selectedOption === "Minuti di guida in funzione dei km percorsi" && kmMinutiData && kmMinutiData.length > 0 && (
   <div className="chart-section">
-    <KmMinutiGiornalieri data={kmMinutiData} />
+    <KmMinutiGiornalieri  
+      data={kmMinutiData} 
+      selectedTarga={selectedTarga}  // Passa direttamente la targa selezionata
+      selectedDate={selectedDate}    // Passa direttamente la data selezionata
+    />
   </div>
 )}
 

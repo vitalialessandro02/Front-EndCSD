@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import "../styles/EventiGiornalieri.css";
 
-const EventiGiornalieri = ({ data }) => {
+const EventiGiornalieri = ({ data,selectedTarga, selectedDate }) => {
   if (!data || data.length === 0) return null;
   const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState("Bar");
@@ -17,36 +17,44 @@ const EventiGiornalieri = ({ data }) => {
       setChartData(filteredData);
     }
   }, [dataType, data]);
-
   useEffect(() => {
-    if (dataType === "weekly" && data.length > 0) {
-      const aggregatedData = {};
-      let count = 0;
-
-      data.forEach((entry) => {
-        if (!entry.date) return;
-        const dayOfWeek = new Date(entry.date).getDay();
-        if (dayOfWeek >= 1 && dayOfWeek <= 7) {
-          count++;
-          Object.keys(entry).forEach((key) => {
-            if (key !== "targa" && key !== "date") {
-              aggregatedData[key] = (aggregatedData[key] || 0) + entry[key];
-            }
-          });
-        }
-      });
-
-      if (count > 0) {
-        const averagedData = Object.keys(aggregatedData).map((key) => ({
-          name: key,
-          value: aggregatedData[key] / count,
-        }));
-        setChartData(averagedData);
-      } else {
-        setChartData([]);
-      }
+    
+  
+    if (dataType === "weekly" && selectedTarga) {
+      console.log("Sto facendo la richiesta per i dati settimanali...");
+      
+      fetch("http://localhost:8000/elastic/weekly_report/", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plate: selectedTarga, date: selectedDate || null }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.json().then((err) => {
+              throw new Error(err.error || "Errore nella richiesta");
+            });
+          }
+          return response.json();
+        })
+        .then((result) => {
+          console.log("Dati ricevuti:", result);
+  
+          if (result.data) {
+            const formattedData = [
+              { name: "Presa Forza On", value: result.data.total_pforza_on },
+              { name: "Presa Forza Off", value: result.data.total_pforza_off },
+              { name: "Engine Ignition", value: result.data.total_engine_ignition },
+              { name: "Start", value: result.data.total_start },
+              { name: "Stop", value: result.data.total_stop },
+            ];
+            setChartData(formattedData);
+          }
+        })
+        .catch((error) => console.error("Errore nel recupero dei dati settimanali:", error.message));
     }
-  }, [dataType, data]);
+  }, [dataType, selectedTarga, selectedDate]);
+  
 
   const COLORS = ["#8884d8", "#82ca9d", "#FFBB28", "#FF8042", "#ff6961"];
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
-const KmDriveTimeGiornalieri = ({ data }) => {
+const KmDriveTimeGiornalieri = ({  data, selectedTarga, selectedDate }) => {
   if (!data || data.length === 0) return null;
   const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState("Bar");
@@ -10,6 +10,7 @@ const KmDriveTimeGiornalieri = ({ data }) => {
 
   useEffect(() => {
     if (dataType === "daily" && data.length > 0) {
+      console.log("ciao");
       const filteredData = Object.keys(data[0])
         .filter((key) => key !== "targa" && key !== "date")
         .map((key) => ({ name: key, value: data[0][key] }));
@@ -17,35 +18,47 @@ const KmDriveTimeGiornalieri = ({ data }) => {
     }
   }, [dataType, data]);
 
+
+
   useEffect(() => {
-    if (dataType === "weekly" && data.length > 0) {
-      const aggregatedData = {};
-      let count = 0;
-
-      data.forEach((entry) => {
-        if (!entry.date) return;
-        const dayOfWeek = new Date(entry.date).getDay();
-        if (dayOfWeek >= 1 && dayOfWeek <= 7) { // Considera solo da lunedì a domenica
-          count++;
-          Object.keys(entry).forEach((key) => {
-            if (key !== "targa" && key !== "date") {
-              aggregatedData[key] = (aggregatedData[key] || 0) + entry[key];
-            }
-          });
-        }
-      });
-
-      if (count > 0) {
-        const averagedData = Object.keys(aggregatedData).map((key) => ({
-          name: key,
-          value: aggregatedData[key] / count,
-        }));
-        setChartData(averagedData);
-      } else {
-        setChartData([]);
-      }
+    if (dataType === "weekly" && selectedTarga) {  // Verifica che selectedTarga esista
+      console.log("ciao");
+      fetch("http://localhost:8000/elastic/weekly_report/", {
+        method: "POST",
+        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plate: selectedTarga, date: selectedDate || null }) // Usa null se la data è assente
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || "Errore nella richiesta") });
+          }
+          return response.json();
+        })
+        .then((result) => {
+          if (result.data) {
+            const formattedData = [
+              { name: "Chilometri Totali", value: result.data.total_km },
+              { name: "Tempo di Guida", value: convertMinutesToHHMM(result.data.total_drive_time) },
+            ];
+            setChartData(formattedData);
+          }
+        })
+        .catch((error) => console.error("Errore nel recupero dei dati settimanali:", error.message));
     }
-  }, [dataType, data]);
+  }, [dataType, selectedTarga, selectedDate]);
+  
+
+
+
+
+
+
+  const convertMinutesToHHMM = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  };
 
   const COLORS = ["#8884d8", "#82ca9d", "#FFBB28", "#FF8042", "#ff6961"];
 
@@ -108,4 +121,3 @@ const KmDriveTimeGiornalieri = ({ data }) => {
 };
 
 export default KmDriveTimeGiornalieri;
-
