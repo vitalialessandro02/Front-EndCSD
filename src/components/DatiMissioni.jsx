@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-import "../styles/Missioni.css"
+import "../styles/Missioni.css";
 
-const DatiMissioni = ({ data }) => {
-  if (!data || data.length === 0) {
-    return (
-      <p className="text-center text-red-500 text-lg font-semibold">
-        Nessun dato disponibile per questa selezione.
-      </p>
-    );
-  }
+const DatiMissioni = ({ data, selectedTarga, selectedDate }) => {
+  if (!data || data.length === 0) return null;
 
-  const [chartType, setChartType] = useState("Bar");
+  const [chartData, setChartData] = useState([]);
+  const [chartType, setChartType] = useState(null); // "Bar" o "Total"
+  const [dataType, setDataType] = useState(null); // "daily" o "weekly"
+
+  useEffect(() => {
+    if (dataType === "daily" && data.length > 0) {
+      const filteredData = Object.keys(data[0] || {})
+        .filter((key) => key !== "targa" && key !== "date")
+        .map((key) => ({ name: key, value: data[0][key] }));
+      setChartData(filteredData);
+    }
+  }, [dataType, data]);
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
@@ -22,7 +28,7 @@ const DatiMissioni = ({ data }) => {
 
   const transformValue = (value) => (value > 100 ? 100 : value);
 
-  const chartData = data.map((mission) => ({
+  const chartData1 = data.map((mission) => ({
     MissionId: mission.MissionId,
     Duration: transformValue(Number(mission.Duration) || 0),
     WorkTime: transformValue(Number(mission.WorkTime) || 0),
@@ -37,14 +43,14 @@ const DatiMissioni = ({ data }) => {
   const totalData = [
     {
       MissionId: "Totale",
-      Duration: transformValue(chartData.reduce((sum, item) => sum + item.OriginalDuration, 0)),
-      WorkTime: transformValue(chartData.reduce((sum, item) => sum + item.OriginalWorkTime, 0)),
-      TotDistance: transformValue(chartData.reduce((sum, item) => sum + item.OriginalTotDistance, 0)),
-      WorkDistance: transformValue(chartData.reduce((sum, item) => sum + item.OriginalWorkDistance, 0)),
-      OriginalDuration: chartData.reduce((sum, item) => sum + item.OriginalDuration, 0),
-      OriginalWorkTime: chartData.reduce((sum, item) => sum + item.OriginalWorkTime, 0),
-      OriginalTotDistance: chartData.reduce((sum, item) => sum + item.OriginalTotDistance, 0),
-      OriginalWorkDistance: chartData.reduce((sum, item) => sum + item.OriginalWorkDistance, 0),
+      Duration: transformValue(chartData1.reduce((sum, item) => sum + item.OriginalDuration, 0)),
+      WorkTime: transformValue(chartData1.reduce((sum, item) => sum + item.OriginalWorkTime, 0)),
+      TotDistance: transformValue(chartData1.reduce((sum, item) => sum + item.OriginalTotDistance, 0)),
+      WorkDistance: transformValue(chartData1.reduce((sum, item) => sum + item.OriginalWorkDistance, 0)),
+      OriginalDuration: chartData1.reduce((sum, item) => sum + item.OriginalDuration, 0),
+      OriginalWorkTime: chartData1.reduce((sum, item) => sum + item.OriginalWorkTime, 0),
+      OriginalTotDistance: chartData1.reduce((sum, item) => sum + item.OriginalTotDistance, 0),
+      OriginalWorkDistance: chartData1.reduce((sum, item) => sum + item.OriginalWorkDistance, 0),
     },
   ];
 
@@ -52,25 +58,33 @@ const DatiMissioni = ({ data }) => {
     <div className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-lg">
       <h2 className="text-xl font-bold mb-4">Dati Missioni</h2>
 
+      {/* Bottoni per selezionare il tipo di dati */}
       <div className="button-container">
-        <button
-          onClick={() => setChartType("Bar")}
-          className="button button-a-barre"
-        >
-          Grafico per Singola Missione
+        <button onClick={() => setDataType("daily")} className={`button button-daily ${dataType === "daily" ? "active" : ""}`}>
+          Dati Giornalieri
         </button>
-        <button
-          onClick={() => setChartType("Total")}
-          className="button button-a-barre"
-        >
-          Grafico Missioni Multiple
+        <button onClick={() => setDataType("weekly")} className={`button button-weekly ${dataType === "weekly" ? "active" : ""}`}>
+          Dati Settimanali
         </button>
       </div>
 
-      {chartType === "Bar" && chartData.length > 0 && (
+      {/* Mostra i bottoni del tipo di grafico solo se si seleziona "Dati Giornalieri" */}
+      {dataType === "daily" && (
+        <div className="button-container mt-4">
+          <button onClick={() => setChartType("Bar")} className={`button button-a-barre ${chartType === "Bar" ? "active" : ""}`}>
+            Grafico per Singola Missione
+          </button>
+          <button onClick={() => setChartType("Total")} className={`button button-a-barre ${chartType === "Total" ? "active" : ""}`}>
+            Grafico Missioni Multiple
+          </button>
+        </div>
+      )}
+
+      {/* Grafico per Singola Missione */}
+      {chartType === "Bar" && chartData1.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold">Grafico a Barre</h3>
-          <BarChart width={800} height={400} data={chartData}>
+          <BarChart width={800} height={400} data={chartData1}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="MissionId" />
             <YAxis domain={[0, 100]} tickFormatter={(tick) => (tick === 100 ? "100+" : tick)} />
@@ -88,6 +102,7 @@ const DatiMissioni = ({ data }) => {
         </div>
       )}
 
+      {/* Grafico per Missioni Multiple */}
       {chartType === "Total" && (
         <div>
           <h3 className="text-lg font-semibold">Grafico Missioni Multiple</h3>

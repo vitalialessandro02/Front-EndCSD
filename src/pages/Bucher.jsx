@@ -274,13 +274,18 @@ const Bucher = () => {
         </>
       )}
 
-      {selectedOption === "missioni" && (
-        missioniData.length > 0 ? (
-          <DatiMissioni data={missioniData} />
-        ) : (
-          <p className="no-data-message"></p>
-        )
-      )}
+{selectedOption === "missioni" && (
+  missioniData && missioniData.length > 0 ? (
+    <DatiMissioni 
+      data={missioniData} 
+      selectedTarga={licensePlate}  
+      selectedDate={date}    
+    />
+  ) : (
+    <p className="no-data-message">Nessun dato disponibile</p>
+  )
+)}
+
       
       {selectedOption === "telemetria" && (
     telemetriaData && Object.keys(telemetriaData).length > 0 ? (
