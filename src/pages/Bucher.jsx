@@ -18,20 +18,6 @@ const Bucher = () => {
     "TEBC50AR3RKV10181", "TEBC50AR9RKV10167", "TEBC30AV9PKV00772", "TEBC30CR0RKV00923", 
     "TEBC30CR2RKV00938", "TEBC30CR9RKV00998", "Intera Flotta"
   ];
-  const platesT = [
-    "GW633HG",
-    "GW936HF",
-    "GW635HG",
-    "GW634HG",
-    "AMB316",
-    "AMB318",
-    "AMB319",
-    "AMB317",
-    "AMB315",
-    "AMB313",
-    "AMB312",
-    "Intera Flotta"
-  ];
 
   useEffect(() => {
     if (selectedOption === "missioni" && date && licensePlate) {
@@ -105,20 +91,22 @@ const Bucher = () => {
 
 
   useEffect(() => {
-    if (selectedOption === "telemetria" && date && plateT) {
+    if (selectedOption === "telemetria" && date && licensePlate) {
+      
       fetchTelemetriaData();
     }
-  }, [selectedOption, date, plateT]);
+  }, [selectedOption, date,licensePlate]);
 
   const fetchTelemetriaData = async () => {
+    
     try {
         const dateObj = new Date(date);
         const starttime = Math.floor(dateObj.setHours(0, 0, 0, 0) / 1000);
         const endtime = Math.floor(dateObj.setHours(23, 59, 59, 999) / 1000);
 
-        const snmachine = plateT === "Intera Flotta"
-            ? platesT.filter(plate => plate !== "Intera Flotta")
-            : [plateT];
+        const snmachine = licensePlate === "Intera Flotta"
+            ? licensePlates.filter(plate => plate !== "Intera Flotta")
+            : [licensePlate];
 
         const queryParams = new URLSearchParams({
             starttime: starttime.toString(),
@@ -146,9 +134,9 @@ const Bucher = () => {
 
         if (result.status === 'success' && result.data) {
             const filteredData = result.data.filter(item => 
-                plateT === "Intera Flotta" || 
-                item.asset.name.trim().toUpperCase() === plateT.trim().toUpperCase()
-            );
+                licensePlate === "Intera Flotta" || 
+                item.asset.sn.trim().toUpperCase() === licensePlate.trim().toUpperCase()
+            ); // qui item.asset.sn platesT
 
             console.log("Dati filtrati:", filteredData);
 
@@ -256,13 +244,13 @@ const Bucher = () => {
             <label>Seleziona la targa:</label>
             <select
               onChange={(e) => selectedOption === "telemetria" 
-                ? setLicensePlateT(e.target.value) 
+                ? setLicensePlate(e.target.value) 
                 : setLicensePlate(e.target.value)
               }
             >
               <option value="">-- Seleziona --</option>
               {selectedOption === "telemetria"
-                ? platesT.map((plate, index) => (
+                ? licensePlates.map((plate, index) => (
                     <option key={index} value={plate}>{plate}</option>
                   ))
                 : licensePlates.map((plate, index) => (
@@ -289,7 +277,9 @@ const Bucher = () => {
       
       {selectedOption === "telemetria" && (
     telemetriaData && Object.keys(telemetriaData).length > 0 ? (
-        <DatiTelemetria data={telemetriaData} />
+      <DatiTelemetria data={telemetriaData} 
+        selectedTarga={licensePlate}  
+        selectedDate={date}  />
     ) : (
         <p className="no-data-message">Nessun dato disponibile</p>
     )

@@ -18,12 +18,7 @@ const KmDriveTimeGiornalieri = ({  data, selectedTarga, selectedDate }) => {
     }
   }, [dataType, data]);
 
-  useEffect(() => {
-    if (dataType === "weekly") {
-      console.log("Modalità settimanale selezionata, ma nessuna azione per ora");
-      // In futuro, potresti aggiungere qui una chiamata API per recuperare i dati settimanali
-    }
-  }, [dataType]);
+
 
   useEffect(() => {
     if (dataType === "weekly" && selectedTarga) {  // Verifica che selectedTarga esista
